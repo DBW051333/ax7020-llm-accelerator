@@ -1,0 +1,20 @@
+# Vivado generated output
+*.cache/
+*.gen/
+*.runs/
+*.hw/
+*.ip_user_files/
+.Xil/
+xsim.dir/
+*.jou
+*.log
+*.pb
+*.wdb
+*.dcp
+*.rpx
+
+# Local build output
+__pycache__/
+*.pyc
+*.o
+*.so*
