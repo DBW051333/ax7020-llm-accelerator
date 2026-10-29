@@ -1,0 +1,14 @@
+{
+  "status": "GATEUP-OVERLAY-LOADED",
+  "fclk0_mhz": 83.333332,
+  "accepted": {
+    "status": "GATEUP-HARDWARE-ACCEPTED",
+    "wns_ns": 0.42,
+    "whs_ns": 0.048,
+    "frequency_mhz": 83.333333,
+    "files": {
+      "gateup_quad_2017.bit": "91bbc86575cc0e631bd11f91d4f93df22fdd175bbd5259e537663913c1671cf0",
+      "gateup_quad_2017.hwh": "a1d030108eee1121a484bb3102509022488a5cc0e24201b007fcd025b132f4a9"
+    }
+  }
+}

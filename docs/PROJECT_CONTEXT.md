@@ -153,7 +153,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 | board-validation2017 | 本轮 Codex | 已完成 | tools/、compat/vivado2017/、docs/；板端独立测试目录 | 进程已结束、锁已释放；新 overlay 保留 | 2026-10-28 | 测试完成；模型文本一致性失败，原因待定位，不能标记整项目验收通过 |
 | logits-diagnosis2017 | 本轮 Codex | 已完成 | compat/vivado2017/diagnostics/、docs/；板端独立诊断程序与日志 | 进程结束、锁已查释放；原体验程序未变 | 2026-10-29 | 已定位近似算术触发放大及首次候选翻转；具体层间量化边界和质量可接受性仍未验证 |
 | gateup-fusion2017 | 本轮 Codex | 已完成 | compat/gateup2017/、docs/、README.md；独立构建与板端部署目录 | 构建/测试进程结束，锁已查释放；板端保留融合overlay | 2026-10-29 | 融合硬件、局部数值和性能测试完成；约0.667tps，相对CPU+22.7%/原Q4+22.0%；文本一致性失败，质量等价未验证 |
-| fusion-speedup2017 | ZCode(2026-10-30会话) | 进行中 | compat/gateup2017/（RTL 重写 override + runtime 流水化 + prepare.py）、build/gateup2017/（新 tag quad-2017-v5）、docs/；不动 accel/ | Vivado 构建目录独占中；板卡尚未部署新产物 | 2026-10-30 | 目标：引擎线速摄取（dot32 双缓冲+FSM 去空转）+ 按 lane 流水打包/启动 DMA；证据定位后端25.8ms/调用=DMA窗口11.1+CPU打包14.7；数值契约逐位保持，待仿真/构建/板测 |
+| fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -305,3 +305,13 @@ vivado -mode batch -source bd_dma_quad.tcl
 - **文本一致性仍失败，质量等价未评估**：CPU重复完整logits逐位一致，融合重复自由文本一致；固定CPU历史第2个预测就从CPU的 ` robot` 翻为PL的 ` story`，该步logits最大绝对差0.5098753，24步最大0.7499304。局部数值通过不是整模型等价通过；速度与该限制必须一起报告。
 - 证据及源码/部署哈希见 `docs/gateup2017/RESULT.md`、同目录JSON、RPT和小日志；原始logits、归档、可执行程序及工程在 `build/gateup2017/`。新旧程序均已主机备份。所有构建/测试进程结束、锁可获取；板卡保留融合overlay。未改SD启动配置、网络、系统库或板卡时间。手动入口 `cd /home/xilinx/ax7020-gateup2017 && bash run.sh` 会核对/加载匹配产物再启动聊天；旧Q4命令需先恢复原overlay。
 - 下一步可按需要研究模型质量/数值边界、减少权重搬运及统一混合格式runtime。未自动扩大到LM Head、Q6_K、完整Attention或宣称原Q58实验全栈验收。
+### 融合引擎线速化 + 打包流水化（2026-10-30，本轮实测完成）
+
+- 用户授权自行探索加速并充分利用 PL 资源；每方案实现后以方案命名分支提交远程。任务 `fusion-speedup2017`，分支 `scheme/fusion-throughput`（自本轮基线提交 `0c4254f` 分出；基线提交把此前 Codex 各轮未提交的共享工作区首次入库并推送 origin/dev/ligan）。
+- 瓶颈证据（v4 实测拆解）：后端 25.8ms/调用 = DMA 窗口 11.1（引擎每子块 15 拍，dot32 单缓冲致流 2 拍收 1 拍）+ CPU 侧 14.7（每调用 6.5MB memcpy+flush 且与 DMA 串行）。
+- 方案：gateup_axis 全量重写（乒乓权重缓冲、dot32 线速握手、激活读管线、至多一个在途结果、权重字预算防包边界吞 header）；runtime 按 lane 流水打包/flush/启动。数值契约不变，与 v4 逐位一致（XSim 对拍 68 行含随机反压逐位相同；板上最差 relative L2 9.79996804e-07 与 v4 相同）。
+- 排障记录：XSim 首版三个时序问题（xvalid 未置位、包边界吞 header、预算漏乘 blocks）由逐拍调试 TB 定位修复；首次构建 LUT 暴涨 17k 根因是 x_memory 双读口降级 LUTRAM，改单读口恢复 BRAM；Vivado 从 Git Bash 启动会被沙箱与 TMP=/tmp 环境破坏 IP Tcl 解释器，须以净化 TEMP 的 PowerShell 非沙箱运行；Git Bash 会把 MSYS 路径转换进 SFTP 远端参数（MSYS2_ARG_CONV_EXCL 禁用），并会把 heredoc 中的转义序列提前展开（字节级构造规避）。
+- 板端：新程序 574fb6ee30fe481ea72a78658caf089b00510ad374358533309d22cedc20a916，bit 91bbc86575cc0e631bd11f91d4f93df22fdd175bbd5259e537663913c1671cf0（WNS+0.420/WHS+0.048，LUT 48.39%/BRAM 60.00%）。CPU 基线（新二进制）与固定参考逐字节一致；553 次强制验证全过；fused 30797.75ms=0.7468tps、复测 0.7413；CPU 0.5433/复测 0.5409。较 CPU +37.5%、较 v4 融合 +11.9%。
+- 限制：文本一致性失败原样保留（引擎与 v4 数值逐位同源，属既有未解决问题），质量等价未验证；剩余瓶颈为 CPU 侧打包/flush（约 14ms/调用）。板端 169.254.32.1/16 为本轮临时辅助地址（重启失效），eth0:1 192.168.2.99/24 为既有配置非本轮所加；串口/SSH 用毕释放，锁可获取，无遗留进程。
+- 证据：docs/fusion-speedup2017/（板端五模式日志、verify 明细、loaded.json）；build/gateup2017/{quad-2017-v5,bitexact,rtl-v4ref}。原始 v4 板端证据未覆盖（logs-v4/overlay-v4 归档）。
+
