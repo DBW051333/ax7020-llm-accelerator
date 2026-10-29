@@ -1,0 +1,63 @@
+Consolidate compiler generated dependencies of target build_info
+[  3%] Built target build_info
+Consolidate compiler generated dependencies of target ggml-base
+[ 21%] Built target ggml-base
+Consolidate compiler generated dependencies of target ggml-cpu
+gmake[3]: Warning: File '/home/xilinx/ax7020-validation2017/board/blite_runtime.c' has modification time 126762086 s in the future
+[ 25%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/home/xilinx/ax7020-validation2017/board/blite_runtime.c.o
+[ 28%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+cc1: warning: switch ‘-mcpu=cortex-a9’ conflicts with switch ‘-march=armv7-a+simd’
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:1: warning: "_GNU_SOURCE" redefined
+    1 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c: In function ‘shutdown_runtime’:
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:102:89: warning: cast discards ‘volatile’ qualifier from pointer target type [-Wcast-qual]
+  102 |     for(int i=0;i<LANES;i++) { release(&rx[i]); if(regs[i]&&regs[i]!=MAP_FAILED) munmap((void*)regs[i],4096); }
+      |                                                                                         ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c: In function ‘initialize’:
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:113:52: warning: ISO C forbids initialization between function pointer and ‘void *’ [-Wpedantic]
+  113 |     void *(*open_device)(unsigned,const char*,int)=dlsym(library,"xclOpen");
+      |                                                    ^~~~~
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:114:13: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  114 |     alloc_bo=dlsym(library,"xclAllocBO"); map_bo=dlsym(library,"xclMapBO");
+      |             ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:114:49: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  114 |     alloc_bo=dlsym(library,"xclAllocBO"); map_bo=dlsym(library,"xclMapBO");
+      |                                                 ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:115:14: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  115 |     get_props=dlsym(library,"xclGetBOProperties"); sync_bo=dlsym(library,"xclSyncBO");
+      |              ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:115:59: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  115 |     get_props=dlsym(library,"xclGetBOProperties"); sync_bo=dlsym(library,"xclSyncBO");
+      |                                                           ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:116:12: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  116 |     free_bo=dlsym(library,"xclFreeBO"); close_device=dlsym(library,"xclClose");
+      |            ^
+/home/xilinx/ax7020-validation2017/board/blite_runtime.c:116:53: warning: ISO C forbids assignment between function pointer and ‘void *’ [-Wpedantic]
+  116 |     free_bo=dlsym(library,"xclFreeBO"); close_device=dlsym(library,"xclClose");
+      |                                                     ^
+cc1: warning: switch ‘-mcpu=cortex-a9’ conflicts with switch ‘-march=armv7-a+simd’
+/home/xilinx/ax7020-validation2017/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘ggml_compute_forward_mul_mat’:
+/home/xilinx/ax7020-validation2017/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c:7601:55: warning: implicit conversion from ‘float’ to ‘double’ to match other operand of binary expression [-Wdouble-promotion]
+ 7601 |                     se += diff*diff; sr += (double)ref*ref;
+      |                                                       ^
+/home/xilinx/ax7020-validation2017/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘ggml_thread_apply_affinity’:
+/home/xilinx/ax7020-validation2017/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c:13253:81: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+13253 |         fprintf(stderr, "warn: failed to set affinity mask 0x%llx : %s (%d)\n", (unsigned long long)mask, strerror(err), err);
+      |                                                                                 ^
+[ 31%] Linking CXX static library libggml-cpu.a
+gmake[3]: warning:  Clock skew detected.  Your build may be incomplete.
+[ 50%] Built target ggml-cpu
+Consolidate compiler generated dependencies of target ggml
+[ 53%] Built target ggml
+Consolidate compiler generated dependencies of target llama
+[ 71%] Built target llama
+Consolidate compiler generated dependencies of target common
+[ 96%] Built target common
+Consolidate compiler generated dependencies of target llama-cli
+[ 96%] Building CXX object examples/main/CMakeFiles/llama-cli.dir/main.cpp.o
+[100%] Linking CXX executable ../../bin/llama-cli
+[100%] Built target llama-cli
+98dc545163e6fc8de326ca3dfc8127344287274dc61157857b1945f1cd56d91c  bin/llama-cli-blite
+0bb8856cd740e2aadb4d43e32be1ba8740a96aa4a074d4a10d666ce76da65d71  bin/llama-cli-diagnostic

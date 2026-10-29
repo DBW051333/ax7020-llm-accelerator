@@ -1,0 +1,8 @@
+19909 grep -E llama-cli|perf_parallel|cmake
+3029e019d190d0cf9319f7681a72e095b53140fbdd08ceccfdb80ecd867cbc07  bin/llama-cli-gateup
+3fd8c6ecde8e19b9ddde48ac4af9420f7880fd47b4bfdc5d2e5a0bd3f81fa587  bin/test_gateup
+23c36f3a641c0062f5f60b1b98c652233a40adcc2c9f6c24df87d2e2b996248c  models/qwen2.5-0.5b-instruct-q4_k_m.gguf
+826d5610b2ff3739c46c82e33c9904be41371672f3f9797cfda811b3548406f4  vectors/real-gate-up.bin
+               total        used        free      shared  buff/cache   available
+Mem:            1000          99         310           1         590         876
+Swap:            511          15         496

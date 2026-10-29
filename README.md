@@ -1,5 +1,7 @@
 # AX7020 LLM PL Accelerator
 
+For agents sharing this project, start with [AGENTS.md](AGENTS.md) and the [shared project context](docs/PROJECT_CONTEXT.md). They describe the archive layout, evidence status, known documentation conflicts, and handoff conventions.
+
 Private project snapshot for the ALINX AX7020 / Zynq-7020 board. The primary reproducible hardware baseline is the **four-instance B-Lite overlay**. The Q5_0/Q8_0 exact-scale path is included as experimental source and is not the deployed board baseline.
 
 ## Delivery contents
@@ -17,6 +19,10 @@ cd ax7020-llm-accelerator
 The archive contains the RTL, Vivado Tcl/IP/BD sources, constraints, testbenches and vectors, board-side C/Python programs, model-integration patch, reports and handoff documents. It omits Vivado caches, generated netlists, run databases, duplicate logs and machine-local project files. The bitstream and XSA for the board-tested four-instance overlay are retained.
 
 ## Rebuild the deployed overlay
+
+For the local **Vivado 2017.4** compatibility rebuild, use [the compatibility flow](compat/vivado2017/README.md). It restores the immutable archive, applies isolated RTL/tool adaptations, runs XSim checks, and creates a separate four-instance project. This is a port with its own validation record, not a reuse of the 2025.2 implementation results.
+
+A separate [Gate/Up + SiLU/multiply fusion experiment](compat/gateup2017/README.md) has now been rebuilt with 2017.4 and tested on the board. The short-sequence test measured about 0.667 token/s versus 0.544 CPU and 0.547 for the Q4 baseline. Local numerical checks pass, but CPU/PL generated text differs; model quality equivalence is unqualified. See the [measured results and limitations](docs/gateup2017/RESULT.md). The original four-instance B-Lite baseline is preserved.
 
 Host prerequisites: Vivado 2025.2 with Zynq-7000 support and the AX7020 device files. Then run:
 

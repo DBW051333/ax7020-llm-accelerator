@@ -1,0 +1,12 @@
+{
+  "layer": "blk.3.ffn_down.weight",
+  "rows": 896,
+  "k": 4864,
+  "activation_shift": 9,
+  "weight_shift": 10,
+  "rtl_arithmetic_bitwise_matches_hardware": true,
+  "mismatched_rows": 0,
+  "max_abs_vs_cpu_reference": 1.7881393432617188e-07,
+  "relative_l2_vs_cpu_reference": 4.6879132649136254e-07,
+  "scope": "First captured Q4 matvec only. Integer model of truncating FP multipliers, Q18 coefficients, integer MAC and truncating final FP conversion; not a timing/state-machine simulation."
+}

@@ -1,0 +1,24 @@
+models/qwen2.5-0.5b-instruct-q4_k_m.gguf: OK
+BLITE-VERIFY blk.3.ffn_down.weight relative_L2=4.68791326e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.4.ffn_down.weight relative_L2=5.83217006e-07 max_abs=3.27825546e-07
+BLITE-VERIFY blk.6.ffn_down.weight relative_L2=7.16360853e-07 max_abs=3.27825546e-07
+BLITE-VERIFY blk.7.ffn_down.weight relative_L2=3.24038534e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.9.ffn_down.weight relative_L2=2.10415748e-07 max_abs=2.68220901e-07
+BLITE-VERIFY blk.10.ffn_down.weight relative_L2=3.21217707e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.12.ffn_down.weight relative_L2=2.56169778e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.13.ffn_down.weight relative_L2=3.81082346e-07 max_abs=2.08616257e-07
+BLITE-VERIFY blk.15.ffn_down.weight relative_L2=2.87485758e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.16.ffn_down.weight relative_L2=3.64474418e-07 max_abs=9.53674316e-07
+BLITE-VERIFY blk.18.ffn_down.weight relative_L2=1.9267763e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.19.ffn_down.weight relative_L2=2.29567983e-07 max_abs=4.76837158e-07
+llama_perf_context_print: prompt eval time =   11766.91 ms /     8 tokens ( 1470.86 ms per token,     0.68 tokens per second)
+llama_perf_context_print:        eval time =    9304.50 ms /     3 runs   ( 3101.50 ms per token,     0.32 tokens per second)
+BLITE-STATS calls=36 cache_misses=12 MACs=156893184 dma_ms=54.806 backend_ms=1297.806 cache_MiB=28.29
+llama_perf_context_print: prompt eval time =   10608.32 ms /     8 tokens ( 1326.04 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   43641.81 ms /    23 runs   ( 1897.47 ms per token,     0.53 tokens per second)
+llama_perf_context_print: prompt eval time =   10661.21 ms /     8 tokens ( 1332.65 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   41286.41 ms /    23 runs   ( 1795.06 ms per token,     0.56 tokens per second)
+BLITE-STATS calls=276 cache_misses=12 MACs=1202847744 dma_ms=346.142 backend_ms=1024.354 cache_MiB=28.29
+llama_perf_context_print: prompt eval time =   10605.51 ms /     8 tokens ( 1325.69 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   42269.07 ms /    23 runs   ( 1837.79 ms per token,     0.54 tokens per second)
+logs/model-cpu.stdout logs/model-pl.stdout differ: byte 70, line 1

@@ -1,0 +1,1 @@
+PARALLEL-PASS lanes=1 rows=8 nsb=4 rounds=1 check=tolerance freshness=6/6 dma_us=18.258 validated_us=27.504 GMAC_s=0.4487 validated_GMAC_s=0.2978 MB_s=315.0

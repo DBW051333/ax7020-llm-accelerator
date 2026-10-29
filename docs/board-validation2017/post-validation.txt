@@ -1,0 +1,6 @@
+PARALLEL-PASS lanes=4 rows=8 nsb=4 rounds=1 check=tolerance freshness=6/6 dma_us=19.722 validated_us=42.252 GMAC_s=0.4154 validated_GMAC_s=0.1939 MB_s=455.9
+98dc545163e6fc8de326ca3dfc8127344287274dc61157857b1945f1cd56d91c  bin/llama-cli-blite
+ae436d84fa3a4d679d5db733f8df03bd8fecb6e119b9ac0fb09131f8d1447532  bin/perf_parallel
+f5c5e2faf46ce512b58a879106f178df8afa9ac5b96853b6ee73a6a117a5310a  overlay/blite_quad_2017.bit
+CmaTotal:         131072 kB
+CmaFree:           21988 kB

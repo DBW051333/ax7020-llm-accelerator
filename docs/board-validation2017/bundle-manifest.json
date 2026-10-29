@@ -1,0 +1,33 @@
+{
+  "upstream_revision": "dafae66cc242eb766797194d3c85c5e502625623",
+  "upstream_archive_sha256": "933eccfb927b5e921ca23f18b2454583a6c6dcc89917fc07c0bb8f3dcffdb912",
+  "patch_sha256": "e6ec775d39121e987382d263c9d8b20d29a428abd80be7d8c272b4693e29ec80",
+  "assets": {
+    "overlay/blite_quad_2017.bit": "f5c5e2faf46ce512b58a879106f178df8afa9ac5b96853b6ee73a6a117a5310a",
+    "overlay/blite_quad_2017.hwh": "d3b561f7e06a5239de9c1a61f8b2d7616f7e92786f81c9e2bf3b8fdf719be140",
+    "overlay/blite_quad_2017.hdf": "8174c7633f8d22e102feefff86644b111e9f4eba88e4f90009815b701b2c9ced",
+    "board/perf_parallel.c": "ff541eb680ba15d490df9826ee02dcf151804bda159aebe3246c0a9bcecd6555",
+    "board/perf_run.c": "a77da1ec42eec9e479a8509c25b973fe4adcc43b9acb76637af2d28003346d58",
+    "board/blite_runtime.c": "2cfaaebb8a68ed5be6828292ce1ad1811cc76003c8265a6d00e416f48cff47ff",
+    "board/blite_runtime.h": "111c7cecee2357f8bc578fe715ff8a3786950fc54229643d121e57e15f309335",
+    "board/test_real_matvec.c": "cbd6c631d348e43f49accdf0862e6a2825cc493d113e290a804cabbd417e9ee8",
+    "vectors/perf_w.hex": "1af5b4c8533faa46eb5e52c47da76aa7cab294f3adfcaddf3858db262ddf355a",
+    "vectors/perf_xd.hex": "29ff9a6ee7d93509f98e83e755748bdb626ae03d428e2d56da58d62b4ec7ed59",
+    "vectors/perf_xq8.hex": "b45939ca09579b60c78e5b042654530e7e0edc22707901dcfe037292ab296758",
+    "vectors/perf_yg.hex": "18800d8fb378a2a997fc2a01b41202b5c0c9d3460c27fcba755b6787ff0b0408",
+    "vectors/w_stream.hex": "f6a4d7a468687a5f20eeefba9bd9da58c4cfb4b56db75ef99d865f0777b1c842",
+    "vectors/xd.hex": "b4b4ebdc46776de15555f1f33ec5f7787950ec931b361ad879ea48acb51a11c1",
+    "vectors/xq8.hex": "37b4e98e21ddae16a8de761bb30402b82a03cae56377d06a8c4407fa8133894f",
+    "vectors/y_golden.hex": "a562a23e0cb020699b6a3572a1b4a434026a047cbe2b3a760a03c63434ce16a2",
+    "load_overlay.py": "07bb3057df95436319ac137a645315489c31bd195244c4ab3c33ad96f5bdd6c1",
+    "build_board.sh": "dbbd8b6955b1eb4acb178b9aa730117dd94771d506076091e20b9ee863d65c31",
+    "test_model.sh": "8c2a66507b9fb101711c311c2ff2754aeb97717a142e8fcc9982f7cef6b5eae9",
+    "verify_model24.sh": "676b95b4c0ea38c956c7a59f28b0438498468fc21e7d3dd8733b26c3e5d24b59"
+  },
+  "bundles": {
+    "board-bundle.tar.gz": "30f0c939f42780d48e2664f2a0ef5a78f519d4a3e13a2c38b1a3f643f5727770",
+    "llama-patched.tar.gz": "afa7d718ab4bdb23d91e6c01ed6b0c3b7143792552647e63a69ca8ca5d6af90b",
+    "validation-logs-final.tar.gz": "1d17d61154f6942dcaeac78ec3c0fdd61c3f431011f31609f926e2cccb54e991",
+    "validation-logs-initial.tar.gz": "61964e7b09e15f96126754dac2d2ae5cb542b25142ca829e8d7b4dba512f760a"
+  }
+}

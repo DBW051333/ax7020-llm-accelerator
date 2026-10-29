@@ -1,0 +1,14 @@
+20340 grep -E bin/llama-cli|perf_parallel
+PREVIOUS_BITFILE /home/xilinx/ax7020-gateup2017/overlay/gateup_quad_2017.bit
+{"status": "GATEUP-OVERLAY-LOADED", "fclk0_mhz": 83.333332, "accepted": {"status": "GATEUP-HARDWARE-ACCEPTED", "wns_ns": 0.442, "whs_ns": 0.042, "frequency_mhz": 83.333333, "files": {"gateup_quad_2017.bit": "d343cbb735b465eaa0503404adb3e8dafcdd8973b0c502f8e0019bdaa8c013a3", "gateup_quad_2017.hwh": "d4626478dd0f6c94edea64f8c45ebe6d019f3012071232351dc1c229e0da5fb0"}}}
+GATEUP enabled: four lanes, paired Q5_0 projections + PL SiLU/mul, CPU down, TX=8MiB
+REAL-GATEUP case=0 relative_L2=0 max_abs=0
+REAL-GATEUP case=1 relative_L2=2.73865704e-07 max_abs=9.53674316e-07
+REAL-GATEUP case=2 relative_L2=2.96912207e-07 max_abs=2.08166817e-17
+REAL-GATEUP case=3 relative_L2=2.83810237e-07 max_abs=9.53674316e-07
+REAL-GATEUP case=4 relative_L2=2.63882196e-07 max_abs=9.53674316e-07
+REAL-GATEUP case=5 relative_L2=2.85168493e-07 max_abs=9.53674316e-07
+REAL-GATEUP case=6 relative_L2=2.7445112e-07 max_abs=9.53674316e-07
+REAL-GATEUP case=7 relative_L2=0 max_abs=0
+REAL-GATEUP-PASS worst_relative_L2=2.96912207e-07 repeat_zero=100
+GATEUP-STATS calls=108 cache_misses=1 MACs=941359104 dma_ms=1199.571 backend_ms=2650.311 pack_ms=134.082 cache_MiB=6.234

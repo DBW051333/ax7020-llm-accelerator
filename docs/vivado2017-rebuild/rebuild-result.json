@@ -1,0 +1,66 @@
+{
+  "status": "REBUILD2017-PASS",
+  "tool": "Vivado 2017.4",
+  "part": "xc7z020clg400-2",
+  "lanes": 4,
+  "requested_fclk_mhz": 83.333,
+  "setup_slack_ns": 0.374,
+  "hold_slack_ns": 0.009,
+  "timing_constraints_met": true,
+  "no_unclocked_registers": true,
+  "no_unconstrained_max_delay_pins": true,
+  "hdf_payload_matches_exports": true,
+  "drc_errors_or_critical_warnings": false,
+  "board_programmed": false,
+  "board_numeric_tested": false,
+  "files": {
+    "build/vivado2017/quad-2017/blite_quad_2017.bit": {
+      "sha256": "f5c5e2faf46ce512b58a879106f178df8afa9ac5b96853b6ee73a6a117a5310a",
+      "bytes": 4045678
+    },
+    "build/vivado2017/quad-2017/blite_quad_2017.hwh": {
+      "sha256": "d3b561f7e06a5239de9c1a61f8b2d7616f7e92786f81c9e2bf3b8fdf719be140",
+      "bytes": 826804
+    },
+    "build/vivado2017/quad-2017/blite_quad_2017.hwdef": {
+      "sha256": "b3a2926e2da3057d05ad3ea14a0a251e82cc8d2d51f2f4a2ed8d8ec461657455",
+      "bytes": 467868
+    },
+    "build/vivado2017/quad-2017/blite_quad_2017.hdf": {
+      "sha256": "8174c7633f8d22e102feefff86644b111e9f4eba88e4f90009815b701b2c9ced",
+      "bytes": 1689918
+    },
+    "build/vivado2017/quad-2017/timing.rpt": {
+      "sha256": "f0b0b1a21138ad00ba956880720be1c027ced7996ef1a8db8227dab4dfa481ec",
+      "bytes": 35049
+    },
+    "build/vivado2017/quad-2017/utilization.rpt": {
+      "sha256": "fddbe291b59f7a77b63c79251517e978476c6a812b66c2dd0d4174c5dda9c371",
+      "bytes": 10634
+    },
+    "build/vivado2017/quad-2017/netlist-audit.json": {
+      "sha256": "6841f9b0c59e6602f53aa69bca57d3368ab52120e9ced5c882e3fef485999cb8",
+      "bytes": 2147
+    },
+    "build/vivado2017/quad-2017/handoff-audit.json": {
+      "sha256": "fbc841fd5df0d078d0ab5a6af89f57bca9ff5d7009df319ee3d8017dbe84c4f8",
+      "bytes": 1316
+    },
+    "build/vivado2017/rtl/manifest.json": {
+      "sha256": "390cffd6f39a504ea4f3f9bee176f237e9800267f6990b656395fcca41c417e2",
+      "bytes": 580
+    },
+    "build/vivado2017/verification.json": {
+      "sha256": "aed073cba7ae0d671274b95aba87214a9c17992c62ff04bfdef33c497bb7b69c",
+      "bytes": 5819
+    },
+    "build/vivado2017/implementation.log": {
+      "sha256": "b683fe0a2eac1fd1b6aa6219e3e55895a860e2ddcbd6eaf42efe771f276806ec",
+      "bytes": 236321
+    },
+    "build/vivado2017/quad-2017/project/blite_quad_2017.runs/impl_1/blite_quad_wrapper_drc_routed.rpt": {
+      "sha256": "81eefe82b0150247595597e8ea3e82418b10c6e0e002d1da81b3a51d8ce2f945",
+      "bytes": 226714
+    }
+  }
+}

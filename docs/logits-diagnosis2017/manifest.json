@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Asia/Shanghai",
+  "upstream_revision": "dafae66cc242eb766797194d3c85c5e502625623",
+  "model_sha256": "23c36f3a641c0062f5f60b1b98c652233a40adcc2c9f6c24df87d2e2b996248c",
+  "production_binary_sha256": "98dc545163e6fc8de326ca3dfc8127344287274dc61157857b1945f1cd56d91c",
+  "original_main_sha256": "8e07ff9805fbaf35059427fcab10a45eaeb3b91ae78b538ad05383ad6c98d30a",
+  "original_ggml_cpu_sha256": "af0d6a5f96a22b94b91920dbc438a0f0805e5a1fafe7274b8453897bb2fdf79c",
+  "hardware_changed": false,
+  "production_binary_changed": false,
+  "diagnostic_only": true,
+  "source_and_artifact_sha256": {
+    "build/logits-diagnosis2017/bin/llama-cli-diagnostic": "0bb8856cd740e2aadb4d43e32be1ba8740a96aa4a074d4a10d666ce76da65d71",
+    "build/logits-diagnosis2017/source/main.cpp": "04d7d63ec7b5067a1b8a2dc4fcfebf890bdc66296c340b212b62e61868d78e9d",
+    "build/logits-diagnosis2017/source/ggml-cpu.c": "a86594d15b4927dd167b370918198ef4c8762983277a7783d0d3d6c68c4aa78c",
+    "build/logits-diagnosis2017/traces.tar.gz": "ea8615f02cbc539c4a9687de21f186c36ed5c2d4706bb709a63ef79f3f324ebe",
+    "accel/board/blite_runtime.c": "2cfaaebb8a68ed5be6828292ce1ad1811cc76003c8265a6d00e416f48cff47ff",
+    "accel/llama.cpp-integration.patch": "e6ec775d39121e987382d263c9d8b20d29a428abd80be7d8c272b4693e29ec80",
+    "build/vivado2017/rtl/fpu32.v": "4eed0b3e3b5cfbc51060033f30d89e9141f98795907f3cb8c932fdeda685c1e3",
+    "build/vivado2017/quad-2017/blite_quad_2017.bit": "f5c5e2faf46ce512b58a879106f178df8afa9ac5b96853b6ee73a6a117a5310a",
+    "build/vivado2017/quad-2017/blite_quad_2017.hwh": "d3b561f7e06a5239de9c1a61f8b2d7616f7e92786f81c9e2bf3b8fdf719be140",
+    "compat/vivado2017/diagnostics/analyze_trace.py": "480ea137ba2b64e17bed05cd129840dca5ca45718c33dabb1dc082c3a51e23ef",
+    "compat/vivado2017/diagnostics/check_rtl_arithmetic.py": "83fb398913cce3e6a195ea08c6b8ad7be63802ea8509cdb4034cb7eaa33a1f9e",
+    "compat/vivado2017/diagnostics/prepare_trace.py": "50d949f26ba8b0b33493023a547f938622da0b15fb9fd3ec524f94662fad0fef",
+    "compat/vivado2017/diagnostics/run_trace.sh": "f927fde21c64c2b12651e77b2324f0b45e7b0e17b596fbb39cb411a65df0a0d2"
+  }
+}

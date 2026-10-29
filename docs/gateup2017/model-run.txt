@@ -1,0 +1,20 @@
+llama_perf_context_print: prompt eval time =   10833.04 ms /     8 tokens ( 1354.13 ms per token,     0.74 tokens per second)
+llama_perf_context_print:        eval time =   79390.55 ms /    23 runs   ( 3451.76 ms per token,     0.29 tokens per second)
+GATEUP-STATS calls=553 cache_misses=24 MACs=4820107264 dma_ms=6200.500 backend_ms=14631.273 pack_ms=1367.034 cache_MiB=149.625
+GATEUP-MODE-DONE forced-verify
+llama_perf_context_print: prompt eval time =   10635.15 ms /     8 tokens ( 1329.39 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   34491.57 ms /    23 runs   ( 1499.63 ms per token,     0.67 tokens per second)
+GATEUP-STATS calls=553 cache_misses=24 MACs=4820107264 dma_ms=6149.023 backend_ms=14284.557 pack_ms=1348.065 cache_MiB=149.625
+GATEUP-MODE-DONE fused
+llama_perf_context_print: prompt eval time =   10734.64 ms /     8 tokens ( 1341.83 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   34465.72 ms /    23 runs   ( 1498.51 ms per token,     0.67 tokens per second)
+GATEUP-STATS calls=553 cache_misses=24 MACs=4820107264 dma_ms=6163.287 backend_ms=14521.577 pack_ms=1366.918 cache_MiB=149.625
+GATEUP-MODE-DONE fused-repeat
+llama_perf_context_print: prompt eval time =   10574.91 ms /     8 tokens ( 1321.86 ms per token,     0.76 tokens per second)
+llama_perf_context_print:        eval time =   42469.21 ms /    23 runs   ( 1846.49 ms per token,     0.54 tokens per second)
+GATEUP-MODE-DONE cpu-repeat
+llama_perf_context_print: prompt eval time =   10631.86 ms /     8 tokens ( 1328.98 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   42304.32 ms /    23 runs   ( 1839.32 ms per token,     0.54 tokens per second)
+GATEUP-MODE-DONE cpu-perf
+GATEUP-NUMERIC-AND-REPEAT-PASS
+GATEUP-TEXT-PARITY-FAIL
