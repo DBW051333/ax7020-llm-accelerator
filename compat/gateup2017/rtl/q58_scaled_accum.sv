@@ -82,7 +82,7 @@ module q58_scaled_accum (
   end else case(state)
    IDLE:if(in_valid)begin
     coefficient<=mw*mx;coefficient2<=mw2*mx2;
-    integer_dot<=dot[20:0];integer_sx<=sx[11:0];
+    integer_dot<=dot[20:0];integer_sx<=$signed(sx[12:0]);
     shift<=ew+ex-6'd2;shift2<=ew2+ex2-6'd2;
     negate<=dw[15]^dx[15];negate2<=dw2[15]^dx2[15];
     first_block<=in_first;last_block<=in_last;state<=PRODUCT;

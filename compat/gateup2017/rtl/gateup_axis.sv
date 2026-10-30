@@ -101,7 +101,7 @@ module gateup_axis (
     wire [1151:0] feed_w = wbuf[feed_sel];
     // Q4_K 6-bit scale/min unpack (delivery blite_core get_sm mapping) and
     // exact FP16 encoding of a 6-bit integer
-    function [5:0] get_sm6(input [2:0] jj, input [95:0] qq, input is_min);
+    function [5:0] get_sm6(input [3:0] jj, input [95:0] qq, input is_min);
         reg [5:0] sc, m;
         begin
             if (jj<3'd4) begin
@@ -116,12 +116,18 @@ module gateup_axis (
     endfunction
     function [15:0] fp16_of_6b(input [5:0] n);
         reg [2:0] e;
+        reg [9:0] mant;
+        reg [4:0] expo;
         begin
             if (n==6'd0) fp16_of_6b=16'h0000;
             else begin
                 e = n[5] ? 3'd5 : n[4] ? 3'd4 : n[3] ? 3'd3 :
                     n[2] ? 3'd2 : n[1] ? 3'd1 : 3'd0;
-                fp16_of_6b={1'b0,5'd15+{2'd0,e},(n<<(10-{1'b0,e}))};
+                // 10-bit assignment context: the shift is evaluated at LHS
+                // width, dropping exactly the implicit leading bit
+                mant = n << (10-{1'b0,e});
+                expo = 5'd15 + {2'd0,e};
+                fp16_of_6b={1'b0,expo,mant};
             end
         end
     endfunction
