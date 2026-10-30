@@ -128,21 +128,27 @@ int gateup_fused(const void *g,const void *u,const void *q8,float *out,int rows,
  int first=0,counts[LANES],starts[LANES];
  for(int i=0;i<LANES;i++){
   counts[i]=rows/4+(i<rows%4);starts[i]=first;first+=counts[i];
-  unsigned char *p=tx[i].map;
-  uint64_t header=0x1558ull|((uint64_t)counts[i]<<16)|((uint64_t)nb<<32);memcpy(p,&header,8);
-  for(int b=0;b<nb;b++){
-   if(!finite_half((const char*)q8+b*34)){fprintf(stderr,"GATEUP invalid activation\n");goto done;}
-   memset(p+8+b*40,0,40);memcpy(p+8+b*40,(const char*)q8+b*34,34);
-  }
-  memcpy(p+prefix,c->data+(size_t)starts[i]*rowbytes,(size_t)counts[i]*rowbytes);
-  if(sync_bo(device,tx[i].id,0,prefix+(size_t)counts[i]*rowbytes,0))goto done;
  }
- __sync_synchronize();uint64_t t=now();
+ for(int b=0;b<nb;b++)
+  if(!finite_half((const char*)q8+b*34)){fprintf(stderr,"GATEUP invalid activation\n");goto done;}
+ __sync_synchronize();
+ /* Arm every receiver before any sender, then pipeline per lane:
+  * pack -> cache flush -> MM2S kick, so lane N's host-side memcpy overlaps
+  * lane N-1's DMA transfer. Weight bytes never change per layer; the flush
+  * cost remains because the shared TX buffer is rewritten each call. */
  for(int i=0;i<LANES;i++){
   wr(i,0x34,0x7000);wr(i,0x30,1);wr(i,0x48,rx[i].pa);wr(i,0x58,counts[i]*8);
  }
  __sync_synchronize();
+ uint64_t t=now();
  for(int i=0;i<LANES;i++){
+  unsigned char *p=tx[i].map;
+  uint64_t header=0x1558ull|((uint64_t)counts[i]<<16)|((uint64_t)nb<<32);memcpy(p,&header,8);
+  for(int b=0;b<nb;b++){
+   memset(p+8+b*40,0,40);memcpy(p+8+b*40,(const char*)q8+b*34,34);
+  }
+  memcpy(p+prefix,c->data+(size_t)starts[i]*rowbytes,(size_t)counts[i]*rowbytes);
+  if(sync_bo(device,tx[i].id,0,prefix+(size_t)counts[i]*rowbytes,0))goto done;
   wr(i,4,0x7000);wr(i,0,1);wr(i,0x18,tx[i].pa);wr(i,0x28,prefix+(size_t)counts[i]*rowbytes);
  }
  unsigned pending=15;

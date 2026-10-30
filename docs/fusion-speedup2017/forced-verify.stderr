@@ -1,0 +1,703 @@
+build: 0 (unknown) with cc (Ubuntu 11.2.0-19ubuntu1) 11.2.0 for arm-linux-gnueabihf
+main: llama backend init
+main: load the model and apply lora adapter, if any
+llama_model_loader: loaded meta data with 40 key-value pairs and 290 tensors from models/qwen2.5-0.5b-instruct-q4_k_m.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen2
+llama_model_loader: - kv   1:                               general.type str              = model
+llama_model_loader: - kv   2:                     general.sampling.top_k i32              = 20
+llama_model_loader: - kv   3:                     general.sampling.top_p f32              = 0.800000
+llama_model_loader: - kv   4:                      general.sampling.temp f32              = 0.700000
+llama_model_loader: - kv   5:            general.sampling.penalty_repeat f32              = 1.100000
+llama_model_loader: - kv   6:                               general.name str              = Qwen2.5 0.5B Instruct
+llama_model_loader: - kv   7:                           general.finetune str              = Instruct
+llama_model_loader: - kv   8:                           general.basename str              = Qwen2.5
+llama_model_loader: - kv   9:                         general.size_label str              = 0.5B
+llama_model_loader: - kv  10:                            general.license str              = apache-2.0
+llama_model_loader: - kv  11:                       general.license.link str              = https://huggingface.co/Qwen/Qwen2.5-0...
+llama_model_loader: - kv  12:                   general.base_model.count u32              = 1
+llama_model_loader: - kv  13:                  general.base_model.0.name str              = Qwen2.5 0.5B
+llama_model_loader: - kv  14:          general.base_model.0.organization str              = Qwen
+llama_model_loader: - kv  15:              general.base_model.0.repo_url str              = https://huggingface.co/Qwen/Qwen2.5-0.5B
+llama_model_loader: - kv  16:                               general.tags arr[str,2]       = ["chat", "text-generation"]
+llama_model_loader: - kv  17:                          general.languages arr[str,1]       = ["en"]
+llama_model_loader: - kv  18:                          qwen2.block_count u32              = 24
+llama_model_loader: - kv  19:                       qwen2.context_length u32              = 32768
+llama_model_loader: - kv  20:                     qwen2.embedding_length u32              = 896
+llama_model_loader: - kv  21:                  qwen2.feed_forward_length u32              = 4864
+llama_model_loader: - kv  22:                 qwen2.attention.head_count u32              = 14
+llama_model_loader: - kv  23:              qwen2.attention.head_count_kv u32              = 2
+llama_model_loader: - kv  24:                       qwen2.rope.freq_base f32              = 1000000.000000
+llama_model_loader: - kv  25:     qwen2.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  26:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  27:                         tokenizer.ggml.pre str              = qwen2
+llama_model_loader: - kv  28:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - kv  29:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  30:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  31:                tokenizer.ggml.eos_token_id u32              = 151645
+llama_model_loader: - kv  32:            tokenizer.ggml.padding_token_id u32              = 151643
+llama_model_loader: - kv  33:                tokenizer.ggml.bos_token_id u32              = 151643
+llama_model_loader: - kv  34:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  35:               tokenizer.ggml.add_eos_token bool             = false
+llama_model_loader: - kv  36:                    tokenizer.chat_template str              = {%- if tools %}\n    {{- '<|im_start|>...
+llama_model_loader: - kv  37:              tokenizer.ggml.normalizer.nfc bool             = true
+llama_model_loader: - kv  38:               general.quantization_version u32              = 2
+llama_model_loader: - kv  39:                          general.file_type u32              = 15
+llama_model_loader: - type  f32:  121 tensors
+llama_model_loader: - type q5_0:  132 tensors
+llama_model_loader: - type q8_0:   13 tensors
+llama_model_loader: - type q4_K:   12 tensors
+llama_model_loader: - type q6_K:   12 tensors
+llm_load_vocab: special tokens cache size = 22
+llm_load_vocab: token to piece cache size = 0.9310 MB
+llm_load_print_meta: format           = GGUF V3 (latest)
+llm_load_print_meta: arch             = qwen2
+llm_load_print_meta: vocab type       = BPE
+llm_load_print_meta: n_vocab          = 151936
+llm_load_print_meta: n_merges         = 151387
+llm_load_print_meta: vocab_only       = 0
+llm_load_print_meta: n_ctx_train      = 32768
+llm_load_print_meta: n_embd           = 896
+llm_load_print_meta: n_layer          = 24
+llm_load_print_meta: n_head           = 14
+llm_load_print_meta: n_head_kv        = 2
+llm_load_print_meta: n_rot            = 64
+llm_load_print_meta: n_swa            = 0
+llm_load_print_meta: n_embd_head_k    = 64
+llm_load_print_meta: n_embd_head_v    = 64
+llm_load_print_meta: n_gqa            = 7
+llm_load_print_meta: n_embd_k_gqa     = 128
+llm_load_print_meta: n_embd_v_gqa     = 128
+llm_load_print_meta: f_norm_eps       = 0.0e+00
+llm_load_print_meta: f_norm_rms_eps   = 1.0e-06
+llm_load_print_meta: f_clamp_kqv      = 0.0e+00
+llm_load_print_meta: f_max_alibi_bias = 0.0e+00
+llm_load_print_meta: f_logit_scale    = 0.0e+00
+llm_load_print_meta: n_ff             = 4864
+llm_load_print_meta: n_expert         = 0
+llm_load_print_meta: n_expert_used    = 0
+llm_load_print_meta: causal attn      = 1
+llm_load_print_meta: pooling type     = 0
+llm_load_print_meta: rope type        = 2
+llm_load_print_meta: rope scaling     = linear
+llm_load_print_meta: freq_base_train  = 1000000.0
+llm_load_print_meta: freq_scale_train = 1
+llm_load_print_meta: n_ctx_orig_yarn  = 32768
+llm_load_print_meta: rope_finetuned   = unknown
+llm_load_print_meta: ssm_d_conv       = 0
+llm_load_print_meta: ssm_d_inner      = 0
+llm_load_print_meta: ssm_d_state      = 0
+llm_load_print_meta: ssm_dt_rank      = 0
+llm_load_print_meta: ssm_dt_b_c_rms   = 0
+llm_load_print_meta: model type       = 1B
+llm_load_print_meta: model ftype      = Q4_K - Medium
+llm_load_print_meta: model params     = 494.03 M
+llm_load_print_meta: model size       = 373.71 MiB (6.35 BPW) 
+llm_load_print_meta: general.name     = Qwen2.5 0.5B Instruct
+llm_load_print_meta: BOS token        = 151643 '<|endoftext|>'
+llm_load_print_meta: EOS token        = 151645 '<|im_end|>'
+llm_load_print_meta: EOT token        = 151643 '<|endoftext|>'
+llm_load_print_meta: PAD token        = 151643 '<|endoftext|>'
+llm_load_print_meta: LF token         = 148848 'ÄĬ'
+llm_load_print_meta: FIM PRE token    = 151659 '<|fim_prefix|>'
+llm_load_print_meta: FIM SUF token    = 151661 '<|fim_suffix|>'
+llm_load_print_meta: FIM MID token    = 151660 '<|fim_middle|>'
+llm_load_print_meta: FIM PAD token    = 151662 '<|fim_pad|>'
+llm_load_print_meta: FIM REP token    = 151663 '<|repo_name|>'
+llm_load_print_meta: FIM SEP token    = 151664 '<|file_sep|>'
+llm_load_print_meta: EOG token        = 151643 '<|endoftext|>'
+llm_load_print_meta: EOG token        = 151645 '<|im_end|>'
+llm_load_print_meta: EOG token        = 151662 '<|fim_pad|>'
+llm_load_print_meta: EOG token        = 151663 '<|repo_name|>'
+llm_load_print_meta: EOG token        = 151664 '<|file_sep|>'
+llm_load_print_meta: max token length = 256
+llm_load_tensors:   CPU_Mapped model buffer size =   373.71 MiB
+.................................................................
+llama_new_context_with_model: n_seq_max     = 1
+llama_new_context_with_model: n_ctx         = 256
+llama_new_context_with_model: n_ctx_per_seq = 256
+llama_new_context_with_model: n_batch       = 64
+llama_new_context_with_model: n_ubatch      = 64
+llama_new_context_with_model: flash_attn    = 0
+llama_new_context_with_model: freq_base     = 1000000.0
+llama_new_context_with_model: freq_scale    = 1
+llama_new_context_with_model: n_ctx_per_seq (256) < n_ctx_train (32768) -- the full capacity of the model will not be utilized
+llama_kv_cache_init:        CPU KV buffer size =     3.00 MiB
+llama_new_context_with_model: KV self size  =    3.00 MiB, K (f16):    1.50 MiB, V (f16):    1.50 MiB
+llama_new_context_with_model:        CPU  output buffer size =     0.58 MiB
+llama_new_context_with_model:        CPU compute buffer size =    37.31 MiB
+llama_new_context_with_model: graph nodes  = 846 (with bs=64), 774 (with bs=1)
+llama_new_context_with_model: graph splits = 1
+main: llama threadpool init, n_threads = 2
+
+system_info: n_threads = 2 (n_threads_batch = 2) / 2 | CPU : NEON = 1 | AARCH64_REPACK = 1 | 
+
+sampler seed: 1234
+sampler params: 
+	repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000
+	dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = -1
+	top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, temp = 0.000
+	mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000
+sampler chain: logits -> logit-bias -> penalties -> dry -> top-k -> typical -> top-p -> min-p -> xtc -> temp-ext -> dist 
+generate: n_ctx = 256, n_batch = 64, n_predict = 24, n_keep = 0
+
+GATEUP enabled: four lanes, paired Q5_0 projections + PL SiLU/mul, CPU down, TX=8MiB
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.84251462e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.67963675e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.81290602e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.99311367e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.2499401e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.78479209e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.66517266e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.49705057e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.64506376e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.09655285e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.97180561e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.15053041e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.28986127e-07 max_abs=9.83476639e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.40140774e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.84855611e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.38245039e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.83938946e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=4.86884292e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.46731294e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.183508e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.54523943e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.79305687e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.49052883e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.49314508e-07 max_abs=1.60932541e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.09794142e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.30476108e-07 max_abs=3.87430191e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.94166749e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.56122183e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.0423405e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=4.82329854e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.50807405e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.78867888e-07 max_abs=1.66893005e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.61249157e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.9382801e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.36459905e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.26208087e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.09735547e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.56902675e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.79336072e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.92321134e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.81507208e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.53718217e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.79177129e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=7.17538802e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=7.18299472e-07 max_abs=1.7285347e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.44943339e-07 max_abs=1.7285347e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.68744352e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.82019617e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.29181355e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.0242084e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.96927925e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.81699561e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.72453341e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.38234611e-07 max_abs=8.64267349e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.79910654e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.29670925e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.90178481e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.47825208e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.19101546e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.67984098e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.05516801e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.70487611e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.24754497e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.58932228e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.47233192e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.53769664e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.9215276e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.60184561e-07 max_abs=1.10268593e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.57094482e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.46372081e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.17097546e-07 max_abs=2.2649765e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.72620905e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.80999968e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.16032317e-07 max_abs=3.57627869e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.85788626e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.61438399e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.81204809e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.00937598e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=6.49370478e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.53780011e-07 max_abs=1.66893005e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.43435672e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.68032429e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.09163285e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.60766079e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.23917967e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.67615176e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.62747542e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.66024532e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.39109854e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.21941789e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.01870919e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.94458538e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.35169102e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=4.94170587e-07 max_abs=2.08616257e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.07373652e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.36416662e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.80296705e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=5.2535971e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.84165389e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.21406438e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.381065e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.56366074e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=9.28160202e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.48244162e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.02531263e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.15626291e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.18226363e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.0466387e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.85429094e-07 max_abs=7.4505806e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.66927841e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.81885684e-07 max_abs=8.64267349e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.54054098e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.67202938e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.74483804e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.57585077e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.41052325e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=5.7430893e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=4.58029139e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=4.90319634e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.34496949e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.12067246e-07 max_abs=4.29153442e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.56780169e-07 max_abs=4.17232513e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=7.05985696e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.83909971e-07 max_abs=9.83476639e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.05395695e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.62085185e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.99064574e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.4117985e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.12833667e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.17616704e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.2733101e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.20543967e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.62183452e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.03453726e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.94509623e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.17151635e-07 max_abs=9.83476639e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.83792923e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.99348459e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.7454074e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.73539211e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=5.21450857e-07 max_abs=2.86102295e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=3.94400828e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=4.41164818e-07 max_abs=2.86102295e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=2.861467e-07 max_abs=2.50339508e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.39116328e-07 max_abs=9.53674316e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.60322679e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.36571154e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.77662691e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=4.75412324e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.03335799e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.28119455e-07 max_abs=8.64267349e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.10496427e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.06446774e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.68943258e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.51264476e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=5.72047274e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.83175357e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.52747788e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.59659262e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.77844932e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.21564945e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.72295973e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.92288499e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.61664343e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.33543487e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.88044559e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=4.48097472e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.1991451e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.51268968e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.19796392e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.32363721e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.123633e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=7.29593482e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.37075903e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.75034496e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.46424431e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.76487659e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=5.6519697e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.42334869e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=5.58002055e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.35104796e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.77320052e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.52447502e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.43915729e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.53437694e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.62858948e-07 max_abs=1.04308128e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.38346056e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.59837246e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.68637237e-07 max_abs=2.38418579e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.93438679e-07 max_abs=1.49011612e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.91895607e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.07075313e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.95192008e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.29050553e-07 max_abs=4.61935997e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.86127345e-07 max_abs=3.87430191e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.9481678e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.25451128e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.44144415e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.84617983e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.40268275e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.04743456e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.32052058e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.72899377e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.41978542e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.80056615e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.10292034e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.40002209e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.90115242e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.04477415e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.76405395e-07 max_abs=1.10268593e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.11971735e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.83059578e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.58631361e-07 max_abs=1.96695328e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.41888062e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.34797009e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.08817787e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.06022761e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.63404049e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.37630042e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.18975246e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.57817013e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.36753231e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.49452352e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.56852229e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.80598386e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.82801782e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.0171406e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.57171768e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.65324547e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.93640662e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.1408199e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.79195621e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.10662321e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.58955501e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.03942671e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.83312238e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.66350789e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.9625121e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.6412907e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.16245765e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.05761603e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.2272783e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.21568348e-07 max_abs=8.64267349e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.72799134e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.01678122e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.09324688e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.10513819e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.87492561e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.41339785e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.87280123e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.90505691e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.76797855e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.65377933e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.1168257e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.82083719e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.73220017e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.65510824e-07 max_abs=8.64267349e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.32415975e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.48809704e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.78297747e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.78648665e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.69770673e-07 max_abs=2.08616257e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=6.00243656e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.99462135e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.26630007e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.49577693e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.82983275e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.35778567e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.12616309e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.38766603e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=6.56030939e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.38414106e-07 max_abs=2.50339508e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.45801686e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=7.0086761e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.84995583e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.51385195e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.48191365e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.08327263e-07 max_abs=5.06639481e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.90688789e-07 max_abs=7.4505806e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.05979315e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.13052778e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.32594705e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.38422213e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.5490911e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.79580575e-07 max_abs=1.84774399e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.34812633e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.33410383e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.86909242e-07 max_abs=2.2649765e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.03703673e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.4867106e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.84297154e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.54816315e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.16970234e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.90410269e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.13958915e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.48039887e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.86552563e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=7.03676159e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.89088441e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.3964705e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.19575349e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.08725242e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.44745508e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.69717568e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.30883422e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.49370522e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.32393809e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.91617053e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.39996322e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.86874438e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.03851396e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.67364146e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.9473971e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.79381803e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.00849351e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.6549604e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.72554039e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.33086205e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.52411233e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.18003592e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.31291349e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=7.03819562e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.11971587e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.79074618e-07 max_abs=4.47034836e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.88151186e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.94963776e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.66356157e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=6.02821981e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.910303e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.77641737e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.3210476e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.63401576e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.69199531e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.82648678e-07 max_abs=2.38418579e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.07610601e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.57941654e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.02939672e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.11610995e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.39864644e-07 max_abs=4.61935997e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.9617247e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.55047241e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=5.96392413e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.41691901e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.36320795e-07 max_abs=1.66893005e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.97186276e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.93925575e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.54613136e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.59135749e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.46561187e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.8599062e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.10591252e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=6.23184293e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.48706265e-07 max_abs=1.31130219e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.27300053e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.41459123e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.59170272e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.56481217e-07 max_abs=1.84774399e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.85038679e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.25975497e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.57127465e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.23192982e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.46830371e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=5.82465849e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.29304845e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.4759476e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.14294117e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=6.85220348e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.79785326e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.73730113e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.83087183e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.97999745e-07 max_abs=5.06639481e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.87080871e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=4.96579585e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=6.16774402e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.29840985e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.88905788e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.65406851e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.99322687e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.17454531e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=7.65801979e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=7.07798151e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.87330034e-07 max_abs=1.60932541e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=6.05864522e-07 max_abs=1.37090683e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.58935852e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.3763328e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.1544513e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.30184903e-07 max_abs=4.47034836e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.88286691e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=7.40764395e-07 max_abs=5.06639481e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=7.20033357e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.33239826e-07 max_abs=2.14576721e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.48853773e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=7.03473968e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.49394522e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.1051721e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.674868e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.59610936e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.93858908e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.29258286e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.69477932e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.25826343e-07 max_abs=9.23871994e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.43963647e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=7.25953491e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.6006888e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.54931766e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.9232193e-07 max_abs=2.2649765e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.79257428e-07 max_abs=1.7285347e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.69563005e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.08827829e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.88150003e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.12932715e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.36215729e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=5.4177343e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.34629002e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=6.48850321e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.86025071e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.90286547e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.67774079e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.31968791e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.66331549e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.44223336e-07 max_abs=7.4505806e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.69249826e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.95843087e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=6.3474748e-07 max_abs=9.23871994e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=6.53698938e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.96286309e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=8.13574504e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=7.48453159e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=7.17996224e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=6.82862797e-07 max_abs=2.74181366e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=6.36939096e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.58850505e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.27821308e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=5.43694945e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=7.82315043e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.81672451e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=5.7287892e-07 max_abs=4.47034836e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.30307456e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=8.66310415e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.04310292e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.84514431e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.77273918e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.01533922e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.41701877e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.34629041e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.32956351e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.65517506e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.84764844e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.804481e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=4.96260775e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.48497861e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.2265922e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=5.5068099e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.4578624e-07 max_abs=2.14576721e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.91315685e-07 max_abs=1.49011612e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.68144731e-07 max_abs=1.60932541e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.28372744e-07 max_abs=7.62939453e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=3.46891466e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.56352508e-07 max_abs=4.47034836e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=5.94189667e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=5.89933289e-07 max_abs=4.76837158e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.50689445e-07 max_abs=1.25169754e-06
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=9.79996804e-07 max_abs=2.2649765e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.54898302e-07 max_abs=5.36441803e-07
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.84993461e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=7.03283655e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.89609266e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.65256494e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=6.02677843e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.87179272e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.09806551e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.92285749e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.95271012e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.04172386e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.96480396e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.62285987e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.65987028e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.72438819e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.9447029e-07 max_abs=1.66893005e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.83901904e-07 max_abs=2.86102295e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.44890147e-07 max_abs=1.14440918e-05
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.48331719e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.24220597e-07 max_abs=6.2584877e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.81084638e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=5.49750332e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.60560526e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=9.03892845e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=6.30447992e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.2065488e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.78712658e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.04187187e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.82966154e-07 max_abs=8.04662704e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.6743016e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.46141055e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.34275805e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.47446294e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.74553426e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.16452333e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.38979421e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.55100841e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=5.57264753e-07 max_abs=1.78813934e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.93431617e-07 max_abs=2.38418579e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.29441974e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=4.42138974e-07 max_abs=1.54972076e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.27752474e-07 max_abs=5.7220459e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=4.37759114e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.62423427e-07 max_abs=7.4505806e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.28715372e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=6.42735653e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=5.63141145e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.19501907e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.05225863e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.83550021e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.55185123e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=7.00331378e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.43999587e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.78195736e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.39200385e-07 max_abs=7.15255737e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=5.93801643e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.40672933e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.78861585e-07 max_abs=1.01327896e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=4.53220566e-07 max_abs=9.53674316e-07
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.43755975e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=5.94775292e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.0397824e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.9956538e-07 max_abs=2.86102295e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.16673383e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.55142129e-07 max_abs=1.66893005e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=2.13449409e-07 max_abs=3.81469727e-06
+GATEUP-VERIFY blk.0.ffn_gate.weight relative_L2=5.06459723e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.1.ffn_gate.weight relative_L2=6.5336862e-07 max_abs=5.06639481e-07
+GATEUP-VERIFY blk.2.ffn_gate.weight relative_L2=6.45529654e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.3.ffn_gate.weight relative_L2=5.71138884e-07 max_abs=8.94069672e-07
+GATEUP-VERIFY blk.4.ffn_gate.weight relative_L2=6.86453442e-07 max_abs=5.96046448e-07
+GATEUP-VERIFY blk.5.ffn_gate.weight relative_L2=7.97603452e-07 max_abs=1.43051147e-06
+GATEUP-VERIFY blk.6.ffn_gate.weight relative_L2=7.36582688e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.7.ffn_gate.weight relative_L2=6.42256928e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.8.ffn_gate.weight relative_L2=6.42385471e-07 max_abs=6.55651093e-07
+GATEUP-VERIFY blk.9.ffn_gate.weight relative_L2=6.9306726e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.10.ffn_gate.weight relative_L2=6.24983099e-07 max_abs=5.66244125e-07
+GATEUP-VERIFY blk.11.ffn_gate.weight relative_L2=5.73319349e-07 max_abs=6.85453415e-07
+GATEUP-VERIFY blk.12.ffn_gate.weight relative_L2=5.74330548e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.13.ffn_gate.weight relative_L2=6.22680903e-07 max_abs=7.74860382e-07
+GATEUP-VERIFY blk.14.ffn_gate.weight relative_L2=5.71625491e-07 max_abs=8.34465027e-07
+GATEUP-VERIFY blk.15.ffn_gate.weight relative_L2=5.7102051e-07 max_abs=1.13248825e-06
+GATEUP-VERIFY blk.16.ffn_gate.weight relative_L2=5.86684982e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.17.ffn_gate.weight relative_L2=6.89704799e-07 max_abs=1.1920929e-06
+GATEUP-VERIFY blk.18.ffn_gate.weight relative_L2=6.80637209e-07 max_abs=1.07288361e-06
+GATEUP-VERIFY blk.19.ffn_gate.weight relative_L2=6.32596968e-07 max_abs=2.02655792e-06
+GATEUP-VERIFY blk.20.ffn_gate.weight relative_L2=5.69363426e-07 max_abs=2.62260437e-06
+GATEUP-VERIFY blk.21.ffn_gate.weight relative_L2=5.47379763e-07 max_abs=1.84774399e-06
+GATEUP-VERIFY blk.22.ffn_gate.weight relative_L2=3.89196323e-07 max_abs=1.90734863e-06
+GATEUP-VERIFY blk.23.ffn_gate.weight relative_L2=1.94742536e-07 max_abs=4.76837158e-06
+llama_perf_sampler_print:    sampling time =      84.19 ms /    32 runs   (    2.63 ms per token,   380.08 tokens per second)
+llama_perf_context_print:        load time =   16258.84 ms
+llama_perf_context_print: prompt eval time =   11240.70 ms /     8 tokens ( 1405.09 ms per token,     0.71 tokens per second)
+llama_perf_context_print:        eval time =   74852.33 ms /    23 runs   ( 3254.45 ms per token,     0.31 tokens per second)
+llama_perf_context_print:       total time =   91530.82 ms /    31 tokens
+GATEUP-STATS calls=553 cache_misses=24 MACs=4820107264 dma_ms=9124.477 backend_ms=11419.527 pack_ms=1952.497 cache_MiB=149.625
