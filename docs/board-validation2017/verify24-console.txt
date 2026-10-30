@@ -1,0 +1,17 @@
+BLITE-VERIFY blk.3.ffn_down.weight relative_L2=4.68791326e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.4.ffn_down.weight relative_L2=5.83217006e-07 max_abs=3.27825546e-07
+BLITE-VERIFY blk.6.ffn_down.weight relative_L2=7.16360853e-07 max_abs=3.27825546e-07
+BLITE-VERIFY blk.7.ffn_down.weight relative_L2=3.24038534e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.9.ffn_down.weight relative_L2=2.10415748e-07 max_abs=2.68220901e-07
+BLITE-VERIFY blk.10.ffn_down.weight relative_L2=3.21217707e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.12.ffn_down.weight relative_L2=2.56169778e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.13.ffn_down.weight relative_L2=3.81082346e-07 max_abs=2.08616257e-07
+BLITE-VERIFY blk.15.ffn_down.weight relative_L2=2.87485758e-07 max_abs=2.38418579e-07
+BLITE-VERIFY blk.16.ffn_down.weight relative_L2=3.64474418e-07 max_abs=9.53674316e-07
+BLITE-VERIFY blk.18.ffn_down.weight relative_L2=1.9267763e-07 max_abs=1.78813934e-07
+BLITE-VERIFY blk.19.ffn_down.weight relative_L2=2.29567983e-07 max_abs=4.76837158e-07
+llama_perf_context_print: prompt eval time =   10592.53 ms /     8 tokens ( 1324.07 ms per token,     0.76 tokens per second)
+llama_perf_context_print:        eval time =   45695.53 ms /    23 runs   ( 1986.76 ms per token,     0.50 tokens per second)
+BLITE-STATS calls=276 cache_misses=12 MACs=1202847744 dma_ms=353.198 backend_ms=1047.966 cache_MiB=28.29
+PL-REPEAT-IDENTICAL
+VERIFY24-NUMERIC-PASS

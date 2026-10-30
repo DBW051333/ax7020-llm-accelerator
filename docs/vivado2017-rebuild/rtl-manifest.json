@@ -1,0 +1,12 @@
+{
+  "source": {
+    "fpu32.v": "dfa8d3cd750d634513376d85188d7c778957c2b44a0a2bf467568a8c0c956f35",
+    "blite_core.v": "9887cfb347a431f9c25be977dfb8e7da3ead8ede75a834c2c41463889109196e",
+    "blite_axis_top.v": "0150938e58a6d7c93c39ec5fda38a9e6b5afd82af8c24a8930006414ae40ffb6"
+  },
+  "generated": {
+    "blite_axis_top.v": "0150938e58a6d7c93c39ec5fda38a9e6b5afd82af8c24a8930006414ae40ffb6",
+    "blite_core.v": "9887cfb347a431f9c25be977dfb8e7da3ead8ede75a834c2c41463889109196e",
+    "fpu32.v": "4eed0b3e3b5cfbc51060033f30d89e9141f98795907f3cb8c932fdeda685c1e3"
+  }
+}

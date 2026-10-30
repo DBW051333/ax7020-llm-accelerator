@@ -1,0 +1,14 @@
+{
+  "tensor": {
+    "name": "blk.3.ffn_down.weight",
+    "shape": [
+      4864,
+      896
+    ],
+    "type_id": 12,
+    "offset": 178567936
+  },
+  "bytes": 2451456,
+  "sha256": "0718fdbc9c243476a7432476891aa6a06e16484a5c41031caafb3c2b5e4c1c5f",
+  "model_sha256": "23c36f3a641c0062f5f60b1b98c652233a40adcc2c9f6c24df87d2e2b996248c"
+}

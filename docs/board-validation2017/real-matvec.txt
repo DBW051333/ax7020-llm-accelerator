@@ -1,0 +1,13 @@
+BLITE enabled: 4 lanes, cached Q4_K weights, activation rescaling
+REAL-MATVEC test=0 rescale=0 relative_L2=8.89500487e-05 max_abs=0.000247471753
+REAL-MATVEC test=0 rescale=1 relative_L2=1.79006254e-07 max_abs=5.57873845e-07
+REAL-MATVEC test=1 rescale=0 relative_L2=0.000108240863 max_abs=0.000208714512
+REAL-MATVEC test=1 rescale=1 relative_L2=1.4746482e-07 max_abs=3.47459974e-07
+REAL-MATVEC test=2 rescale=0 relative_L2=0.000474711616 max_abs=0.000280972103
+REAL-MATVEC test=2 rescale=1 relative_L2=1.86795252e-07 max_abs=1.48577654e-07
+REAL-MATVEC test=3 rescale=0 relative_L2=0.000454706785 max_abs=0.000221904448
+REAL-MATVEC test=3 rescale=1 relative_L2=1.51754717e-07 max_abs=6.27463504e-08
+REAL-MATVEC test=4 rescale=0 relative_L2=0 max_abs=0
+REAL-MATVEC test=4 rescale=1 relative_L2=0 max_abs=0
+REAL-MATVEC-PASS rows=896 k=4864 tests=5 worst_relative_L2=1.86795252e-07
+BLITE-STATS calls=10 cache_misses=1 MACs=43581440 dma_ms=12.654 backend_ms=176.152 cache_MiB=2.36

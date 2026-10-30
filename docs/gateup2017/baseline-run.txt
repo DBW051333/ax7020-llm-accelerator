@@ -1,0 +1,6 @@
+llama_perf_context_print: prompt eval time =   10513.85 ms /     8 tokens ( 1314.23 ms per token,     0.76 tokens per second)
+llama_perf_context_print:        eval time =   43271.59 ms /    23 runs   ( 1881.37 ms per token,     0.53 tokens per second)
+llama_perf_context_print: prompt eval time =   10632.85 ms /     8 tokens ( 1329.11 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   42065.02 ms /    23 runs   ( 1828.91 ms per token,     0.55 tokens per second)
+BLITE-STATS calls=276 cache_misses=12 MACs=1202847744 dma_ms=346.127 backend_ms=961.564 cache_MiB=28.29
+GATEUP-BASELINE-RECORDED

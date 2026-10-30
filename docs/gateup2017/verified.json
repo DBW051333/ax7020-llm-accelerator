@@ -1,0 +1,19 @@
+{
+  "build/gateup2017/rtl/fp_mul_rne.sv": "2e8a0e0b3aa40cfa4c46ea858207cbda2c6de75ae8ed3751a8b475bc3c3f5a14",
+  "build/gateup2017/rtl/gateup_axis.sv": "845480e3c837b50678b56e03e7fac88cb303baf2ee8eaeb627e720589f2270a8",
+  "build/gateup2017/rtl/gateup_bd.v": "a90b2b983091908fdc924dcd22e80d641f30d245d7b7bcc5bafa3548ef8d3629",
+  "build/gateup2017/rtl/q58_dot32.sv": "5998b0a1b124841133bf0e7cd8cbd2643875c6e0a0fb556cc45631b4539da551",
+  "build/gateup2017/rtl/q58_scaled_accum.sv": "3403ba9c7fd01923b3620902f28df05aee1eff6fd69295bd94eb670280e5ba18",
+  "build/gateup2017/rtl/sigmoid.hex": "99a48375a896b69b6b2ea466e84c1a5587c56ffe94f10b0639fd079c33f2e1f9",
+  "build/gateup2017/rtl/silu_mul.sv": "80d0e3e9dc7b09262fe2f039142511f3f0c119744a3412dc1c5be4b131364ecf",
+  "build/gateup2017/sim/act-gold.hex": "a55895bd518d6c72330c597f7790ae201d8ed40a01e7036687bc860847335a66",
+  "build/gateup2017/sim/act-input.hex": "415176b0155c718b890caaf9be2239b9f6f8d29cc70d56a4a6f1b48bce17d44f",
+  "build/gateup2017/sim/axis-gold.hex": "6bcc29236de5aa7150b40b8f467353afee588134f16bca1c40c75b8fca67e0ea",
+  "build/gateup2017/sim/axis-input.hex": "2f761fb5ab145644341baa2b3b722474f44693e30b3491f2a1ae31f45541b0e2",
+  "build/gateup2017/sim/axis-last.hex": "5b54f6e618f08e519a40cfcde3d46a6f95791ddb0a68d3ad769a7bbf1d6cb8d6",
+  "build/gateup2017/sim/mul-gold.hex": "3b83e6e5789492866d368c80054c4ba60dac7d3351e84316e2cb98e879dfdb5a",
+  "build/gateup2017/sim/mul-input.hex": "c1741f0f54f5d5821d93cdfc6812e9aad3bebf723bf6bd3b63bffedf8b9263fb",
+  "build/gateup2017/sim/sigmoid.hex": "99a48375a896b69b6b2ea466e84c1a5587c56ffe94f10b0639fd079c33f2e1f9",
+  "compat/gateup2017/tb.sv": "8bded7e7c1b252420d6ce17567e7f7688794fb94c6ac00371c1b31c7b5a8d7fc",
+  "build/gateup2017/sim/simulation.txt": "9752952b659a34ab7cc9f906e0aa522df68fa592f0bf6c300f117440d0e3362c"
+}

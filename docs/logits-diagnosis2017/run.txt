@@ -1,0 +1,18 @@
+llama_perf_context_print: prompt eval time =   11151.49 ms /     8 tokens ( 1393.94 ms per token,     0.72 tokens per second)
+llama_perf_context_print:        eval time =   48434.41 ms /    23 runs   ( 2105.84 ms per token,     0.47 tokens per second)
+TRACE-DONE cpu
+llama_perf_context_print: prompt eval time =   11694.01 ms /     8 tokens ( 1461.75 ms per token,     0.68 tokens per second)
+llama_perf_context_print:        eval time =   47549.01 ms /    23 runs   ( 2067.35 ms per token,     0.48 tokens per second)
+BLITE-STATS calls=276 cache_misses=12 MACs=1202847744 dma_ms=346.385 backend_ms=928.754 cache_MiB=28.29
+TRACE-DONE pl-forced
+CAUSAL EXPERIMENT: hardware runs, CPU reference replaces each Q4 output; not acceptance/performance
+llama_perf_context_print: prompt eval time =   10528.77 ms /     8 tokens ( 1316.10 ms per token,     0.76 tokens per second)
+llama_perf_context_print:        eval time =   48872.80 ms /    23 runs   ( 2124.90 ms per token,     0.47 tokens per second)
+BLITE-STATS calls=276 cache_misses=12 MACs=1202847744 dma_ms=347.105 backend_ms=1128.873 cache_MiB=28.29
+TRACE-DONE pl-reference
+llama_perf_context_print: prompt eval time =   10709.99 ms /     8 tokens ( 1338.75 ms per token,     0.75 tokens per second)
+llama_perf_context_print:        eval time =   48349.32 ms /    23 runs   ( 2102.14 ms per token,     0.48 tokens per second)
+TRACE-DONE cpu-repeat
+CPU-REPEAT-LOGITS-IDENTICAL
+0bb8856cd740e2aadb4d43e32be1ba8740a96aa4a074d4a10d666ce76da65d71  bin/llama-cli-diagnostic
+23c36f3a641c0062f5f60b1b98c652233a40adcc2c9f6c24df87d2e2b996248c  models/qwen2.5-0.5b-instruct-q4_k_m.gguf
