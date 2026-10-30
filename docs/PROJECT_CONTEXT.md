@@ -153,12 +153,8 @@ vivado -mode batch -source bd_dma_quad.tcl
 | board-validation2017 | 本轮 Codex | 已完成 | tools/、compat/vivado2017/、docs/；板端独立测试目录 | 进程已结束、锁已释放；新 overlay 保留 | 2026-10-28 | 测试完成；模型文本一致性失败，原因待定位，不能标记整项目验收通过 |
 | logits-diagnosis2017 | 本轮 Codex | 已完成 | compat/vivado2017/diagnostics/、docs/；板端独立诊断程序与日志 | 进程结束、锁已查释放；原体验程序未变 | 2026-10-29 | 已定位近似算术触发放大及首次候选翻转；具体层间量化边界和质量可接受性仍未验证 |
 | gateup-fusion2017 | 本轮 Codex | 已完成 | compat/gateup2017/、docs/、README.md；独立构建与板端部署目录 | 构建/测试进程结束，锁已查释放；板端保留融合overlay | 2026-10-29 | 融合硬件、局部数值和性能测试完成；约0.667tps，相对CPU+22.7%/原Q4+22.0%；文本一致性失败，质量等价未验证 |
-<<<<<<< Updated upstream
-| fusion-speedup2017 | ZCode(2026-10-30会话) | 进行中 | compat/gateup2017/（RTL 重写 override + runtime 流水化 + prepare.py）、build/gateup2017/（新 tag quad-2017-v5）、docs/；不动 accel/ | Vivado 构建目录独占中；板卡尚未部署新产物 | 2026-10-30 | 目标：引擎线速摄取（dot32 双缓冲+FSM 去空转）+ 按 lane 流水打包/启动 DMA；证据定位后端25.8ms/调用=DMA窗口11.1+CPU打包14.7；数值契约逐位保持，待仿真/构建/板测 |
-=======
 | fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
 | pl-roadmap2017 | ZCode(2026-10-30会话) | 已完成 | docs/pl-roadmap-20261030/PLAN.md、docs/PROJECT_CONTEXT.md；纯分析未改代码/硬件 | 无独占资源 | 2026-10-30 | PL 资源扩展路线（Down/Attention/LMHead 入 PL + DSP 化 MAC）与带宽上限推算（约5.0tps@实测带宽）；全部估算需独立立项验证 |
->>>>>>> Stashed changes
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -310,8 +306,6 @@ vivado -mode batch -source bd_dma_quad.tcl
 - **文本一致性仍失败，质量等价未评估**：CPU重复完整logits逐位一致，融合重复自由文本一致；固定CPU历史第2个预测就从CPU的 ` robot` 翻为PL的 ` story`，该步logits最大绝对差0.5098753，24步最大0.7499304。局部数值通过不是整模型等价通过；速度与该限制必须一起报告。
 - 证据及源码/部署哈希见 `docs/gateup2017/RESULT.md`、同目录JSON、RPT和小日志；原始logits、归档、可执行程序及工程在 `build/gateup2017/`。新旧程序均已主机备份。所有构建/测试进程结束、锁可获取；板卡保留融合overlay。未改SD启动配置、网络、系统库或板卡时间。手动入口 `cd /home/xilinx/ax7020-gateup2017 && bash run.sh` 会核对/加载匹配产物再启动聊天；旧Q4命令需先恢复原overlay。
 - 下一步可按需要研究模型质量/数值边界、减少权重搬运及统一混合格式runtime。未自动扩大到LM Head、Q6_K、完整Attention或宣称原Q58实验全栈验收。
-<<<<<<< Updated upstream
-=======
 ### 融合引擎线速化 + 打包流水化（2026-10-30，本轮实测完成）
 
 - 用户授权自行探索加速并充分利用 PL 资源；每方案实现后以方案命名分支提交远程。任务 `fusion-speedup2017`，分支 `scheme/fusion-throughput`（自本轮基线提交 `0c4254f` 分出；基线提交把此前 Codex 各轮未提交的共享工作区首次入库并推送 origin/dev/ligan）。
@@ -326,5 +320,5 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 - 任务 pl-roadmap2017（ZCode 同会话，fusion-speedup2017 之后）：将三轮探索固化为 docs/pl-roadmap-20261030/PLAN.md——资源账本（v5 实测：LUT 48%/DSP 10.9%/BRAM 60%）、DSP48E1 能力映射（2 MAC/片/拍位精确打包、层内串行分时复用）、算子迁移排序（Down≈341ms → Attention≈259ms → LMHead≈444ms，后两者为估算）、最大部署资源预算（LUT 66%/DSP 33%/BRAM 69%）与 tps 阶梯（0.747→约0.9→约1.0→2.5~4.0→5.0 带宽上限，端口理论 6.7）。
 - 全部"估算"项未实现、未验证；任何落地须独立走仿真→时序→板测。文本一致性失败仍为既有未解决问题。交互式流程图为本轮会话可视化产物，不在仓库内。
+- 本文件在 dev/ligan 上曾短暂包含未解决的合并冲突标记（提交 65d7e99），本提交以 scheme/fusion-throughput 的版本为基底重建修正。
 
->>>>>>> Stashed changes
