@@ -56,6 +56,11 @@ branch='''#ifdef GGML_USE_GATEUP
        up->ne[1]==4864 && gate->ne[1]==4864) {
         cur=ggml_map_custom3_shape(ctx,cur,gate,up,gateup_compute,1,nullptr,4864,1);
         cb(cur,"ffn_gateup_pl_fused",il);
+        if(down->type==GGML_TYPE_Q4_K && down->ne[0]==4864 && down->ne[1]==896) {
+            cur=ggml_map_custom3_shape(ctx,cur,down,cur,gateup_down_compute,1,nullptr,896,1);
+            cb(cur,"ffn_down_pl_q4k",il);
+            return cur;
+        }
         return llm_build_lora_mm(lctx,ctx,down,cur);
     }
 #endif
