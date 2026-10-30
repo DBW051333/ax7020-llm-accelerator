@@ -155,7 +155,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 | gateup-fusion2017 | 本轮 Codex | 已完成 | compat/gateup2017/、docs/、README.md；独立构建与板端部署目录 | 构建/测试进程结束，锁已查释放；板端保留融合overlay | 2026-10-29 | 融合硬件、局部数值和性能测试完成；约0.667tps，相对CPU+22.7%/原Q4+22.0%；文本一致性失败，质量等价未验证 |
 | fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
 | pl-roadmap2017 | ZCode(2026-10-30会话) | 已完成 | docs/pl-roadmap-20261030/PLAN.md、docs/PROJECT_CONTEXT.md；纯分析未改代码/硬件 | 无独占资源 | 2026-10-30 | PL 资源扩展路线（Down/Attention/LMHead 入 PL + DSP 化 MAC）与带宽上限推算（约5.0tps@实测带宽）；全部估算需独立立项验证 |
-| full-source-20261030 | ZCode(2026-10-30会话) | 进行中 | 分支 dev/ligan-full-source（含 v5 合并）；compat/gateup2017/rtl（fmt12 WIP）、vectors.py、DEBUG-NOTES-fmt12.md | 无独占资源占用；未构建硬件 | 2026-10-31 | 三阶段迁移（Down/Attention/LMHead）启动：Q4_K 引擎 RTL WIP（Q5/Q8 回归绿，fmt12 数值两处待查见 DEBUG-NOTES）；运行时未接入（安全） |
+| full-source-20261030 | ZCode(2026-10-30/31会话) | 等待板测 | 分支 dev/ligan-full-source；compat/gateup2017/（fmt12 引擎收敛+runtime matvec+callback Down 派发+test_model.sh 829 预期）、build/gateup2017/quad-2017-v6/ | 硬件已验收未上板；板端连接中断（COM13 消失、169.254.32.1 半丢包无 SSH）待用户恢复 | 2026-10-31 | 阶段1 仿真全绿（GATEUP-VERIFIED 76 行含 fmt12）+ v6 硬件验收（bit d2b4a33f…，WNS+0.114，LUT 78.36%）；部署步骤见 compat/gateup2017/DEPLOY-v6.md；阶段2（Attention）与阶段3（LM Head）未开始 |
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -329,4 +329,12 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 模型张量实测（gguf-py）：Attention Q/K/O 全 24 层 Q5_0；V 混合 12 层 Q5_0 + 12 层 Q8_0（引擎 format 8 可覆盖，Q/K/V/O 均带 F32 bias 需 CPU 侧补加）；token_embd=Q8_0 [151936,896] 证实 LM Head 假设。
 - 阶段1（Down 入 PL）设计定稿并部分实现：Q4_K 作为 format 12 接入统一引擎——dot32 增加 Σx 输出、双项 scaler（term=(d·sc)·Snq−(dmin·m)·Sx，Q5 路径 dx2=0 语义逐位不变、68 行回归通过）、乒乓缓冲扩至 18 字/超块、按格式预算。已修三处 bug（scale 切片偏移、fp16_of_6b 指数位宽、向量打包高位来源），**遗留两处数值问题（case A 2^-15 系统偏差、case B term2 恒零）**，fmt12 配置暂从验收向量摘除保持 GATEUP-VERIFIED 绿灯；运行时/回调未接入（不会派发错误数据到硬件）。
 - 续作入口：compat/gateup2017/DEBUG-NOTES-fmt12.md（含 fp16_of_6b concat 截断 bug 的修复写法、恢复步骤、运行时接入设计）。
+
+### full-source 阶段1（Down 入 PL）开发完成、等待板测（2026-10-31）
+
+- 分支 dev/ligan-full-source（提交至 "runtime gateup_matvec + Down 派发接入 + v6 硬件验收"）。
+- **fmt12（Q4_K）引擎调试收敛**：四类 bug 修复——fp16_of_6b 重写（12 位 concat 整体错位+尾数自定宽截断）、get_sm6 的 jj 3 位加法回绕、dot32 的 sx 用组合 x_sum（消费拍已换块，改 x_sum_r 寄存）、integer_sx 零扩展（13 位片段赋 21 位 signed 寄存器需 $signed() 重解释）。**GATEUP-VERIFIED 76 行**（含 (12,2,256)/(12,4,512)/(12,2,4864) 三个随机配置；Q5/Q8 主路径 max_abs 与 v5 一致）。调试方法：逐拍 dot32 内部跟踪 + 逐块 scaler 输入与 Python 从包重算期望值对照（dot 384/384 一致后锁定 sx 与符号扩展）。教训：Verilog concat/移位自定宽与 part-select 无符号是本次全部四类 bug 的共同根源。
+- runtime/callback：gateup_matvec（fmt12 单矩阵派发，缓存按格式标签区分，12 层 Q4_K 缓存 29.4MB，总 179MB<192MB）；gateup_down_compute（Q8_0 量化+派发+verify 下 Q4_K vec_dot 参考）；图分支对 Q4_K [4864,896] 的 Down 包装为 custom3_shape [896,1]（Q6_K 层保持 CPU）；test_model.sh 预期 553→829 次调用（+276 Down）、DOWN-VERIFY 276。
+- 硬件 quad-2017-v6 已验收：WNS+0.114/WHS+0.054 @83.33MHz、LUT 78.36%（fmt12 增 ~16k：18 字乒乓×2+双项 scaler+解码组合逻辑）、BRAM 84 不变；bit d2b4a33fb7677c9b5e1c304107d79500fb60ae7d182bb9fd68aacf57d76d16bb、HWH 28133688a9542acdfb5407c592eaf03967d842e05551e479077f74473730dd66；64 项网表+33 项 HWH 检查过、DRC 无 Error/Critical。
+- **板端部署挂起**：COM13 串口消失（USB 枚举丢失）、169.254.32.1 ping 半丢包且 TCP/22 无法建立（跨会话板卡/线缆状态变化）；全部产物与逐步命令见 compat/gateup2017/DEPLOY-v6.md，连接恢复后可一次执行。未验证项：板端 829 调用、DOWN-VERIFY、tps 对比（预期：Down 派发节省约 250~340ms/步，tps 0.75→0.85~0.9，估算）。
 
