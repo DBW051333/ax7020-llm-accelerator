@@ -37,17 +37,21 @@ module gateup_axis (
     reg [15:0] d_memory [0:255];
 
     // weight ping-pong: stream fills one buffer while the MAC drains the other
-    reg [319:0] wbuf [0:1];
+    reg [1151:0] wbuf [0:1];
     reg wbuf_v [0:1];
     reg fill_sel;
-    reg [2:0] fill_idx;
-    wire [2:0] fill_last = (format==8'd8) ? 3'd4 : 3'd2;
+    reg [4:0] fill_idx;
+    wire [4:0] fill_last = (format==8'd12) ? 5'd17 : (format==8'd8) ? 5'd4 : 5'd2;
     // weight-word budget: stops accepting after the packet's last weight word
     // so the next packet's header is never eaten while results drain
     reg [27:0] wbudget;
     wire [7:0] hdr_format = s_axis_tdata[15:8];
-    wire [27:0] wbudget_next = s_axis_tdata[31:16] * s_axis_tdata[47:32] *
-        ((hdr_format==8'd21 ? 2 : 1) * ((hdr_format==8'd8) ? 5 : 3));
+    wire [31:0] hdr_units = (hdr_format==8'd12) ? ((s_axis_tdata[47:32]+16'd7)>>3)
+                                               : {16'd0,s_axis_tdata[47:32]};
+    wire [31:0] hdr_words = (hdr_format==8'd12) ? 32'd18 :
+                            (hdr_format==8'd8) ? 32'd5 :
+                            (hdr_format==8'd21) ? 32'd6 : 32'd3;
+    wire [27:0] wbudget_next = s_axis_tdata[31:16] * (hdr_units * hdr_words);
 
     // feed pointers (one beat = 8 elements of one group)
     reg feed_sel;
@@ -60,6 +64,8 @@ module gateup_axis (
     // result attribution: latched when a block's last beat fires
     reg [15:0] res_dw;
     reg [15:0] res_scale;
+    reg [15:0] res_dw2;
+    reg [15:0] res_dx2;
     reg [8:0] res_blk;
     reg res_pending;      // one dot result in flight; attribution is stable
                           // from its block's last beat until the scaler pops it
@@ -81,6 +87,7 @@ module gateup_axis (
     wire emit_slot = !out_v || m_axis_tready;
     wire dot_input_ready, dot_valid;
     wire signed [31:0] dot;
+    wire signed [31:0] dot_sx;
     wire scale_ready, scale_valid;
     wire [31:0] scaled_result;
     wire act_ready, act_valid;
@@ -91,7 +98,35 @@ module gateup_axis (
     wire scale_consume = scale_valid && scale_output_ready;
     wire feed_fire = state==FLOW && xvalid && wbuf_v[feed_sel] && dot_input_ready
                      && (feed_grp!=2'd0 || !res_pending || scale_fire);
-    wire [319:0] feed_w = wbuf[feed_sel];
+    wire [1151:0] feed_w = wbuf[feed_sel];
+    // Q4_K 6-bit scale/min unpack (delivery blite_core get_sm mapping) and
+    // exact FP16 encoding of a 6-bit integer
+    function [5:0] get_sm6(input [2:0] jj, input [95:0] qq, input is_min);
+        reg [5:0] sc, m;
+        begin
+            if (jj<3'd4) begin
+                sc = qq[8*jj +: 8] & 8'h3F;
+                m  = qq[8*(jj+4) +: 8] & 8'h3F;
+            end else begin
+                sc = (qq[8*(jj+4) +: 8] & 8'h0F) | (qq[8*(jj-4) +: 8] >> 6 << 4);
+                m  = (qq[8*(jj+4) +: 8] >> 4)     | (qq[8*jj +: 8] >> 6 << 4);
+            end
+            get_sm6 = is_min ? m : sc;
+        end
+    endfunction
+    function [15:0] fp16_of_6b(input [5:0] n);
+        reg [2:0] e;
+        begin
+            if (n==6'd0) fp16_of_6b=16'h0000;
+            else begin
+                e = n[5] ? 3'd5 : n[4] ? 3'd4 : n[3] ? 3'd3 :
+                    n[2] ? 3'd2 : n[1] ? 3'd1 : 3'd0;
+                fp16_of_6b={1'b0,4'd15+{1'b0,e},(n<<(10-{1'b0,e}))};
+            end
+        end
+    endfunction
+    wire [5:0] sm_sc = get_sm6(feed_blk[2:0], feed_w[127:32], 1'b0);
+    wire [5:0] sm_min = get_sm6(feed_blk[2:0], feed_w[127:32], 1'b1);
 
     // next-beat activation address (leads the beat consumed this cycle)
     wire [1:0] nxt_grp = (feed_grp==2'd3) ? 2'd0 : feed_grp+2'd1;
@@ -105,15 +140,23 @@ module gateup_axis (
 
     // weight decode (unchanged bit layout, source switched to the fed buffer)
     reg [63:0] decoded_weight;
-    integer j, element;
+    integer j, element, byteidx;
     reg [4:0] unsigned_q5;
+    reg [3:0] q4_nib;
     always @* begin
         decoded_weight=0;
         unsigned_q5=0;
         element=0;
+        byteidx=0;
+        q4_nib=0;
         for (j=0; j<8; j=j+1) begin
             element=feed_grp*8+j;
-            if ((format==8'd5 || format==8'd21)) begin
+            if (format==8'd12) begin
+                byteidx=((feed_blk[2:1])*4 + feed_grp)*8 + (j&15);
+                q4_nib=(feed_blk[0]) ? feed_w[128+byteidx*8+4 +: 4]
+                                     : feed_w[128+byteidx*8 +: 4];
+                decoded_weight[j*8 +: 8]={4'd0,q4_nib};
+            end else if ((format==8'd5 || format==8'd21)) begin
                 unsigned_q5={feed_w[16+element],
                     feed_w[48+(element%16)*8+(element>=16 ? 4 : 0) +: 4]};
                 decoded_weight[j*8 +: 8]={3'd0,unsigned_q5}-8'd16;
@@ -124,11 +167,11 @@ module gateup_axis (
     q58_dot32 mac (
         .clk(aclk), .rst_n(aresetn), .w_data(decoded_weight), .x_data(x_word_r),
         .in_valid(feed_fire), .in_ready(dot_input_ready),
-        .result(dot), .out_valid(dot_valid), .out_ready(scale_fire)
+        .result(dot), .sx(dot_sx), .out_valid(dot_valid), .out_ready(scale_fire)
     );
     q58_scaled_accum scaler (
-        .clk(aclk), .rst_n(aresetn), .dot(dot),
-        .dw(res_dw), .dx(res_scale),
+        .clk(aclk), .rst_n(aresetn), .dot(dot), .sx(dot_sx),
+        .dw(res_dw), .dx(res_scale), .dw2(res_dw2), .dx2(res_dx2),
         .in_first(res_blk==9'd0), .in_last(res_blk+9'd1==blocks),
         .in_valid(scale_fire), .in_ready(scale_ready),
         .result(scaled_result), .out_valid(scale_valid), .out_ready(scale_output_ready)
@@ -149,7 +192,7 @@ module gateup_axis (
             fill_sel<=0; fill_idx<=0; wbuf_v[0]<=0; wbuf_v[1]<=0; wbudget<=0;
             feed_sel<=0; feed_grp<=0; feed_blk<=0; xvalid<=0;
             x_word_r<=0; x_scale_r<=0;
-            res_dw<=0; res_scale<=0; res_blk<=0; res_pending<=1'b0;
+            res_dw<=0; res_scale<=0; res_dw2<=0; res_dx2<=0; res_blk<=0; res_pending<=1'b0;
             gate_result<=0; out_is_gate<=1;
             out_v<=0; out_d<=0; out_last_r<=0; out_row<=0; irq<=0;
         end else begin
@@ -164,7 +207,7 @@ module gateup_axis (
             case (state)
                 HDR: if (take) begin
                     if (s_axis_tdata[7:0]!=8'h58 ||
-                        (s_axis_tdata[15:8]!=5 && s_axis_tdata[15:8]!=8 && s_axis_tdata[15:8]!=21) ||
+                        (s_axis_tdata[15:8]!=5 && s_axis_tdata[15:8]!=8 && s_axis_tdata[15:8]!=12 && s_axis_tdata[15:8]!=21) ||
                         s_axis_tdata[31:16]==0 || s_axis_tdata[47:32]==0 ||
                         s_axis_tdata[47:32]>256) state<=BAD;
                     else begin
@@ -216,12 +259,21 @@ module gateup_axis (
                     if (scale_fire) res_pending<=1'b0;
                     if (feed_fire) begin
                         if (feed_grp==2'd3) begin
-                            wbuf_v[feed_sel]<=1'b0;
+                            if (format==8'd12) begin
+                                if (feed_blk[2:0]==3'd7) begin
+                                    wbuf_v[feed_sel]<=1'b0;
+                                    feed_sel<=~feed_sel;
+                                end
+                            end else begin
+                                wbuf_v[feed_sel]<=1'b0;
+                                feed_sel<=~feed_sel;
+                            end
                             res_dw<=feed_w[15:0];
-                            res_scale<=x_scale_r;
+                            res_scale<=(format==8'd12) ? fp16_of_6b(sm_sc) : x_scale_r;
+                            res_dw2<=(format==8'd12) ? feed_w[31:16] : 16'd0;
+                            res_dx2<=(format==8'd12) ? fp16_of_6b(sm_min) : 16'd0;
                             res_blk<=feed_blk;
                             res_pending<=1'b1;
-                            feed_sel<=~feed_sel;
                             feed_grp<=2'd0;
                             if (feed_blk+9'd1==blocks) feed_blk<=9'd0;
                             else feed_blk<=feed_blk+9'd1;

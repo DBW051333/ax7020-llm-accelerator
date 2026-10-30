@@ -13,6 +13,7 @@ module q58_dot32 (
     input  wire               in_valid,
     output wire               in_ready,
     output reg  signed [31:0] result,
+    output reg  signed [31:0] sx,
     output reg                out_valid,
     input  wire               out_ready
 );
@@ -54,6 +55,11 @@ module q58_dot32 (
     wire signed [18:0] q_sum   = q0 + q1 + q2 + q3 + q4 + q5 + q6 + q7;
     wire signed [22:0] dot_sum = acc + q_sum;
 
+    // exact per-block sum of the eight activation bytes (used by Q4_K's
+    // dmin*m*Sx term); presented with the same timing as result
+    wire signed [9:0]  x_sum  = x0 + x1 + x2 + x3 + x4 + x5 + x6 + x7;
+    reg  signed [11:0] s_acc;
+
     // The slot frees this edge when it is empty, holds a non-final beat that
     // the accumulate stage consumes now, or holds a final beat while no
     // result is pending (result is produced and the slot refilled at once).
@@ -67,8 +73,10 @@ module q58_dot32 (
             q_last    <= 1'b0;
             beat_cnt  <= 2'd0;
             acc       <= '0;
+            s_acc     <= '0;
             out_valid <= 1'b0;
             result    <= '0;
+            sx        <= '0;
             q0 <= '0; q1 <= '0; q2 <= '0; q3 <= '0;
             q4 <= '0; q5 <= '0; q6 <= '0; q7 <= '0;
         end else begin
@@ -78,11 +86,14 @@ module q58_dot32 (
                 if (q_last) begin
                     if (!out_valid) begin
                         result    <= {{9{dot_sum[22]}}, dot_sum};
+                        sx        <= {{20{s_acc[11]}}, s_acc + x_sum};
                         out_valid <= 1'b1;
                     end
                     acc       <= '0;
+                    s_acc     <= '0;
                 end else begin
-                    acc <= acc + q_sum;
+                    acc   <= acc + q_sum;
+                    s_acc <= s_acc + x_sum;
                 end
             end
 
