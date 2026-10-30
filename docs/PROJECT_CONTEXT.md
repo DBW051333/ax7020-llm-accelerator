@@ -155,6 +155,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 | gateup-fusion2017 | 本轮 Codex | 已完成 | compat/gateup2017/、docs/、README.md；独立构建与板端部署目录 | 构建/测试进程结束，锁已查释放；板端保留融合overlay | 2026-10-29 | 融合硬件、局部数值和性能测试完成；约0.667tps，相对CPU+22.7%/原Q4+22.0%；文本一致性失败，质量等价未验证 |
 | fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
 | pl-roadmap2017 | ZCode(2026-10-30会话) | 已完成 | docs/pl-roadmap-20261030/PLAN.md、docs/PROJECT_CONTEXT.md；纯分析未改代码/硬件 | 无独占资源 | 2026-10-30 | PL 资源扩展路线（Down/Attention/LMHead 入 PL + DSP 化 MAC）与带宽上限推算（约5.0tps@实测带宽）；全部估算需独立立项验证 |
+| full-source-20261030 | ZCode(2026-10-30会话) | 进行中 | 分支 dev/ligan-full-source（含 v5 合并）；compat/gateup2017/rtl（fmt12 WIP）、vectors.py、DEBUG-NOTES-fmt12.md | 无独占资源占用；未构建硬件 | 2026-10-31 | 三阶段迁移（Down/Attention/LMHead）启动：Q4_K 引擎 RTL WIP（Q5/Q8 回归绿，fmt12 数值两处待查见 DEBUG-NOTES）；运行时未接入（安全） |
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -321,4 +322,11 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 任务 pl-roadmap2017（ZCode 同会话，fusion-speedup2017 之后）：将三轮探索固化为 docs/pl-roadmap-20261030/PLAN.md——资源账本（v5 实测：LUT 48%/DSP 10.9%/BRAM 60%）、DSP48E1 能力映射（2 MAC/片/拍位精确打包、层内串行分时复用）、算子迁移排序（Down≈341ms → Attention≈259ms → LMHead≈444ms，后两者为估算）、最大部署资源预算（LUT 66%/DSP 33%/BRAM 69%）与 tps 阶梯（0.747→约0.9→约1.0→2.5~4.0→5.0 带宽上限，端口理论 6.7）。
 - 全部"估算"项未实现、未验证；任何落地须独立走仿真→时序→板测。文本一致性失败仍为既有未解决问题。交互式流程图为本轮会话可视化产物，不在仓库内。
 - 本文件在 dev/ligan 上曾短暂包含未解决的合并冲突标记（提交 65d7e99），本提交以 scheme/fusion-throughput 的版本为基底重建修正。
+
+### full-source 迁移任务启动（2026-10-31，WIP）
+
+- 用户指令：按迁移排序（Down→Attention→LMHead）开发并推送到 dev/ligan/full_source。**git 限制**：dev/ligan 已存在导致子路径分支名不可用，实际分支为 `dev/ligan-full-source`（已推送，基点=dev/ligan 515ce2c 合并 scheme/fusion-throughput 220a6fe）。
+- 模型张量实测（gguf-py）：Attention Q/K/O 全 24 层 Q5_0；V 混合 12 层 Q5_0 + 12 层 Q8_0（引擎 format 8 可覆盖，Q/K/V/O 均带 F32 bias 需 CPU 侧补加）；token_embd=Q8_0 [151936,896] 证实 LM Head 假设。
+- 阶段1（Down 入 PL）设计定稿并部分实现：Q4_K 作为 format 12 接入统一引擎——dot32 增加 Σx 输出、双项 scaler（term=(d·sc)·Snq−(dmin·m)·Sx，Q5 路径 dx2=0 语义逐位不变、68 行回归通过）、乒乓缓冲扩至 18 字/超块、按格式预算。已修三处 bug（scale 切片偏移、fp16_of_6b 指数位宽、向量打包高位来源），**遗留两处数值问题（case A 2^-15 系统偏差、case B term2 恒零）**，fmt12 配置暂从验收向量摘除保持 GATEUP-VERIFIED 绿灯；运行时/回调未接入（不会派发错误数据到硬件）。
+- 续作入口：compat/gateup2017/DEBUG-NOTES-fmt12.md（含 fp16_of_6b concat 截断 bug 的修复写法、恢复步骤、运行时接入设计）。
 

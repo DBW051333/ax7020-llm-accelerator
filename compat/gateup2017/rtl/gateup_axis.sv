@@ -121,7 +121,7 @@ module gateup_axis (
             else begin
                 e = n[5] ? 3'd5 : n[4] ? 3'd4 : n[3] ? 3'd3 :
                     n[2] ? 3'd2 : n[1] ? 3'd1 : 3'd0;
-                fp16_of_6b={1'b0,4'd15+{1'b0,e},(n<<(10-{1'b0,e}))};
+                fp16_of_6b={1'b0,5'd15+{2'd0,e},(n<<(10-{1'b0,e}))};
             end
         end
     endfunction
