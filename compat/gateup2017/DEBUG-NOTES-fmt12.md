@@ -26,3 +26,12 @@
 2. vectors.py 恢复 3 个 fmt12 配置（注释保留在文件中）。
 3. verify.ps1 全绿 → runtime/callback 接入（设计已定：`ggml_map_custom3_shape(ctx,cur,down,cur,down_compute,1,nullptr,896,1)`，条件 `down->type==Q4_K && ne==[4864,896]`；runtime 加 `gateup_matvec`，缓存 12 层 ×2.45MB ≤ 192MB 余量内）。
 4. 走构建→时序→板测链；Q6_K（format 14）与 Attention/LM Head 阶段见 docs/pl-roadmap-20261030/PLAN.md。
+
+## 2026-10-31 续：dx3（激活 scale）发现与当前状态
+
+- **根本性发现（板端 498× 偏差的根因）**：fmt12 项必须包含激活块的 Q8_0 scale——原引擎 dx 端口即激活 scale（d_memory），fmt12 改用 sc 时把它弄丢了。板上证据：用 dump 的权重+激活精确重算第 0 行 = 77.35，板上 dst0 = 7.69（差 ~10×，随块而异）；sim 通过是金标同样漏乘（互相抵消）。
+- **已实现 dx3 路径**（q58_scaled_accum 全文件重写）：term = (dw·dx)·dot·mx3 − (dw2·dx2)·sx·mx3，shift = ew+ex+ex3−27（有符号 8 位，负移位=正确舍入到累加器 LSB 之下）；Q5 路径 dx3=1.0（0x3C00）逐位不变（76 行回归 max_abs 2.38419e-06 不变）。gateup_axis 增加 res_dx3 锁存（fmt12=x_scale_r，Q5/Q8=1.0）。
+- 金标已修：fmt12 参考乘 scales[sb*8+j]。
+- **验证状态**：(12,2,256) 两行通过；(12,4,512) row 0 失败——got=9.22337e18（=2^63，累加器 112 位饱和特征，h=111），点积/系数路径已排除（dot 384/384 一致），疑点在双超块边界的 sh1/项配对或 K=512 特有的 budget/乒乓交互。**下一会话从 (12,4,512) 的逐拍 tb_trace12 复现开始**（工具全在 build/gateup2017/simdbg12/）。
+- 部署链重要教训：**bundle.py 不运行 prepare_software.py**——改回调后必须显式跑 prepare_software 再 bundle（曾导致 to_float 修复三轮未上板）；回调 rows 应取 w->ne[1]（dst->ne[1]=1）；matvec 包头格式字节必须写 `0x58|(12<<8)` 而非在 0x1558 上 OR（0x15|0x0C=0x17 非法格式 → 引擎 BAD 态）。
+- 硬件 v6（bit d2b4a33f）不含 dx3 路径——dx3 收敛后需 v7 重建。

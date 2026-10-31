@@ -39,7 +39,7 @@ static void gateup_down_compute(struct ggml_tensor *dst,const struct ggml_tensor
                                 int ith,int nth,void *userdata) {
     (void)nth;(void)userdata;
     if(ith!=0)return;
-    const int k=(int)x->ne[0],rows=(int)dst->ne[1];
+    const int k=(int)x->ne[0],rows=(int)w->ne[1];
     GGML_ASSERT(x->type==GGML_TYPE_F32 && ggml_is_contiguous(x));
     const auto *q8=ggml_get_type_traits_cpu(GGML_TYPE_Q8_0);
     const auto *q4=ggml_get_type_traits_cpu(GGML_TYPE_Q4_K);
@@ -51,14 +51,24 @@ static void gateup_down_compute(struct ggml_tensor *dst,const struct ggml_tensor
     const char *verify=getenv("BLITE_GATEUP_VERIFY");
     if(verify && !strcmp(verify,"1")) {
         double se=0,sr=0,max_abs=0;
+        // Reference: dequantized Q4_K row dotted with the ORIGINAL F32 input
+        // (Q4_K vec_dot pairs with Q8_K, not the Q8_0 the hardware consumes).
+        const auto *t4=ggml_get_type_traits(GGML_TYPE_Q4_K);
+        std::vector<float> xrow(k),wrow(k);
+        const float*xf=(const float*)x->data;
         for(int r=0;r<rows;r++) {
-            float reference;
-            q4->vec_dot(k,&reference,0,(const char*)w->data+r*w->nb[1],0,activation.data(),0,1);
+            float reference=0.f;
+            t4->to_float((const char*)w->data+r*w->nb[1],wrow.data(),k);
+            for(int i=0;i<k;i++)reference+=wrow[i]*xf[i];
             double diff=(double)((float*)dst->data)[r]-reference;
             se+=diff*diff;sr+=(double)reference*reference;
             max_abs=std::max(max_abs,fabs(diff));
         }
         double relative=sr>0?sqrt(se/sr):sqrt(se);
+        fprintf(stderr,"GATEUP-DOWN-DBG %s type=%d ne0=%d ne1=%d nb1=%zu wrow0..3=%g,%g,%g,%g xf0..3=%g,%g,%g,%g dst0=%g ref0=%g sr=%g se=%g\n",
+            w->name,(int)w->type,(int)w->ne[0],(int)w->ne[1],w->nb[1],
+            wrow[0],wrow[1],wrow[2],wrow[3],xf[0],xf[1],xf[2],xf[3],
+            ((float*)dst->data)[0],wrow[0]*xf[0],sr,se);
         fprintf(stderr,"GATEUP-DOWN-VERIFY %s relative_L2=%.9g max_abs=%.9g\n",w->name,relative,max_abs);
         if(!std::isfinite(relative)||relative>1e-4)
             GGML_ABORT("Down numerical verification failed for %s",w->name);

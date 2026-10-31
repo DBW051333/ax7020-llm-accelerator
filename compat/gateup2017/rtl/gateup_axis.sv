@@ -66,6 +66,7 @@ module gateup_axis (
     reg [15:0] res_scale;
     reg [15:0] res_dw2;
     reg [15:0] res_dx2;
+    reg [15:0] res_dx3;      // activation-block scale (fmt12); 1.0 for Q5/Q8
     reg [8:0] res_blk;
     reg res_pending;      // one dot result in flight; attribution is stable
                           // from its block's last beat until the scaler pops it
@@ -177,7 +178,7 @@ module gateup_axis (
     );
     q58_scaled_accum scaler (
         .clk(aclk), .rst_n(aresetn), .dot(dot), .sx(dot_sx),
-        .dw(res_dw), .dx(res_scale), .dw2(res_dw2), .dx2(res_dx2),
+        .dw(res_dw), .dx(res_scale), .dw2(res_dw2), .dx2(res_dx2), .dx3(res_dx3),
         .in_first(res_blk==9'd0), .in_last(res_blk+9'd1==blocks),
         .in_valid(scale_fire), .in_ready(scale_ready),
         .result(scaled_result), .out_valid(scale_valid), .out_ready(scale_output_ready)
@@ -198,7 +199,7 @@ module gateup_axis (
             fill_sel<=0; fill_idx<=0; wbuf_v[0]<=0; wbuf_v[1]<=0; wbudget<=0;
             feed_sel<=0; feed_grp<=0; feed_blk<=0; xvalid<=0;
             x_word_r<=0; x_scale_r<=0;
-            res_dw<=0; res_scale<=0; res_dw2<=0; res_dx2<=0; res_blk<=0; res_pending<=1'b0;
+            res_dw<=0; res_scale<=0; res_dw2<=0; res_dx2<=0; res_dx3<=16'h3c00; res_blk<=0; res_pending<=1'b0;
             gate_result<=0; out_is_gate<=1;
             out_v<=0; out_d<=0; out_last_r<=0; out_row<=0; irq<=0;
         end else begin
@@ -278,6 +279,7 @@ module gateup_axis (
                             res_scale<=(format==8'd12) ? fp16_of_6b(sm_sc) : x_scale_r;
                             res_dw2<=(format==8'd12) ? feed_w[31:16] : 16'd0;
                             res_dx2<=(format==8'd12) ? fp16_of_6b(sm_min) : 16'd0;
+                            res_dx3<=(format==8'd12) ? x_scale_r : 16'h3c00;
                             res_blk<=feed_blk;
                             res_pending<=1'b1;
                             feed_grp<=2'd0;

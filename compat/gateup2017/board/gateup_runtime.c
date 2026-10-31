@@ -195,6 +195,8 @@ static struct entry *prepare12(const void *w,int rows,int k,size_t ws){
    memcpy(p+(size_t)r*rowbytes+(size_t)b*144,sbk,144);
   }
  }
+ FILE *dbg=fopen("/tmp/row12.bin","wb");
+ if(dbg){fwrite(p,rowbytes,1,dbg);fclose(dbg);fprintf(stderr,"GATEUP row12 dump rows=%d rowbytes=%zu d=%02x%02x dmin=%02x%02x\n",rows,rowbytes,p[1],p[0],p[3],p[2]);}
  *c=(struct entry){w,NULL,rows,k,12,ws,0,bytes,p};cache_bytes+=bytes;misses++;return c;
 }
 int gateup_matvec(const void *w,const void *q8,float *out,int rows,int k,size_t ws,const char *name){
@@ -207,6 +209,8 @@ int gateup_matvec(const void *w,const void *q8,float *out,int rows,int k,size_t 
  uint64_t start=now();int rc=-1;
  if(initialize())goto done;
  struct entry *c=prepare12(w,rows,k,ws);if(!c){fprintf(stderr,"GATEUP pack failed %s\n",name);goto done;}
+ {FILE *dbg=fopen("/tmp/act12.bin","wb");
+  if(dbg){fwrite(q8,(size_t)nb*34,1,dbg);fclose(dbg);}}
  int first=0,counts[LANES],starts[LANES];
  for(int i=0;i<LANES;i++){
   counts[i]=rows/4+(i<rows%4);starts[i]=first;first+=counts[i];
@@ -221,7 +225,7 @@ int gateup_matvec(const void *w,const void *q8,float *out,int rows,int k,size_t 
  uint64_t t=now();
  for(int i=0;i<LANES;i++){
   unsigned char *p=tx[i].map;
-  uint64_t header=0x1558ull|((uint64_t)12<<8)|((uint64_t)counts[i]<<16)|((uint64_t)nb<<32);
+  uint64_t header=0x58ull|((uint64_t)12<<8)|((uint64_t)counts[i]<<16)|((uint64_t)nb<<32);
   memcpy(p,&header,8);
   for(int b=0;b<nb;b++){
    memset(p+8+b*40,0,40);memcpy(p+8+b*40,(const char*)q8+b*34,34);
@@ -238,7 +242,13 @@ int gateup_matvec(const void *w,const void *q8,float *out,int rows,int k,size_t 
    if((m|st)&0x70){fprintf(stderr,"GATEUP DMA error %s lane%d %08x/%08x\n",name,i,m,st);goto done;}
    if((m&0x1000)&&(st&0x1000))pending&=~(1u<<i);
   }
-  if(now()-t>2000000000ull){fprintf(stderr,"GATEUP DMA timeout %s\n",name);goto done;}
+  if(now()-t>2000000000ull){
+   fprintf(stderr,"GATEUP DMA timeout %s\n",name);
+   for(int i=0;i<LANES;i++)
+    fprintf(stderr," lane%d mm2s_c=%08x mm2s_s=%08x s2mm_c=%08x s2mm_s=%08x rxlen=%u\n",
+     i,rd(i,0),rd(i,4),rd(i,0x30),rd(i,0x34),rd(i,0x58));
+   goto done;
+  }
  }
  dma_ns+=now()-t;
  for(int i=0;i<LANES;i++){
