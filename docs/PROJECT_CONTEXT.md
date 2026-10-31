@@ -158,7 +158,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 | replacement-ssh | 本轮 Codex | 已完成 | 原SD卡串口查询及eth0临时辅助地址；docs/PROJECT_CONTEXT.md | COM11和SSH均已关闭释放；未加载overlay | 2026-10-31 | 主机指纹核对及密码登录通过；辅助地址重启失效 |
 | fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
 | pl-roadmap2017 | ZCode(2026-10-30会话) | 已完成 | docs/pl-roadmap-20261030/PLAN.md、docs/PROJECT_CONTEXT.md；纯分析未改代码/硬件 | 无独占资源 | 2026-10-30 | PL 资源扩展路线（Down/Attention/LMHead 入 PL + DSP 化 MAC）与带宽上限推算（约5.0tps@实测带宽）；全部估算需独立立项验证 |
-| full-source-20261030 | ZCode(2026-10-30/31会话) | 进行中 | 分支 dev/ligan-full-source；compat/gateup2017/（fmt12 引擎收敛+runtime matvec+callback Down 派发+test_model.sh 829 预期）、build/gateup2017/quad-2017-v6/ | 硬件已验收未上板；板端连接中断（COM13 消失、169.254.32.1 半丢包无 SSH）待用户恢复 | 2026-10-31 | 阶段1：fmt12 引擎+runtime/callback 完成并上板联调——发现并修复 4 类问题（matvec 包头 0x1558|12<<8=0x17 非法格式→BAD 态；回调 rows 取 dst->ne[1]=1；Q4_K vec_dot 需 Q8_K 校验改 to_float 参考；**激活块 Q8_0 scale 缺失（498x 偏差根因，dump 重算 77.35 vs 板上 7.69 证实）→ dx3 三因子 scaler 已实现**，Q5 回归绿）；遗留 (12,4,512) row0 2^63 饱和一个数值问题（DEBUG-NOTES-fmt12.md #5）；v6 bit 不含 dx3，收敛后需 v7 重建；板端连接已恢复（169.254.32.99，重启后 eth0 持久双地址） |
+| full-source-20261030 | ZCode(2026-10-30/31会话) | 阶段1挂起（板回滚v5） | 分支 dev/ligan-full-source；compat/gateup2017/（fmt12 引擎收敛+runtime matvec+callback Down 派发+test_model.sh 829 预期）、build/gateup2017/quad-2017-v6/ | 硬件已验收未上板；板端连接中断（COM13 消失、169.254.32.1 半丢包无 SSH）待用户恢复 | 2026-10-31 | 阶段1：fmt12 引擎+runtime/callback 完成并上板联调——发现并修复 4 类问题（matvec 包头 0x1558|12<<8=0x17 非法格式→BAD 态；回调 rows 取 dst->ne[1]=1；Q4_K vec_dot 需 Q8_K 校验改 to_float 参考；**激活块 Q8_0 scale 缺失（498x 偏差根因，dump 重算 77.35 vs 板上 7.69 证实）→ dx3 三因子 scaler 已实现**，Q5 回归绿）；遗留 (12,4,512) row0 2^63 饱和一个数值问题（DEBUG-NOTES-fmt12.md #5）；v6 bit 不含 dx3，收敛后需 v7 重建；板端连接已恢复（169.254.32.99，重启后 eth0 持久双地址） |
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -349,6 +349,12 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 部署联调四轮，逐层修复：matvec 包头格式字节错误（引擎 BAD 态，DMA 状态转储定位）；回调 rows=dst->ne[1]=1 静默拒绝；校验参考 Q4_K vec_dot 配 Q8_0 错误配对（改 to_float×原始 F32 输入）；**激活 scale 缺失（498× 偏差）→ dx3 三因子 scaler**。
 - 关键教训：bundle.py 不运行 prepare_software.py（修复三轮未上板）；碎片化字符串补丁不可靠（scaler 文件曾成嵌合体，整文件重写解决）；引擎 BAD 态后必须整片重载（融合调用也会随后卡死）。
 - 当前：fmt12 单超块行 (12,2,256) 板级路径就绪；(12,4,512) row0 有 2^63 累加饱和待查；fmt12 配置摘离验收向量（Q5/Q8 回归绿）；v7 bit 待 dx3 收敛后构建。
+
+### 板端回滚 v5、恢复可用（2026-10-31，本轮实测）
+
+- 用户决策回滚到 v5 可用状态。方法：git 220a6fe 的 v5 软件侧源码（runtime/callback/prepare_software/test_model）临时恢复 → prepare_software+bundle → 上板重编译 → **二进制哈希精确还原 574fb6ee**（源码级可复现构建验证）→ 重载 v5 overlay（bit 91bbc865）→ 五模式测试组 **GATEUP-NUMERIC-AND-REPEAT-PASS**。
+- 板端当前状态：**v5 融合配置可用**——fused 30760.72ms=0.7474 tps、复测 30914.35ms=0.7434；CPU 0.5410/0.5411；GATEUP-STATS calls=553 ✓；TEXT-PARITY-FAIL 为既有已知限制。手动入口 `cd /home/xilinx/ax7020-gateup2017 && bash run.sh`。证据 docs/fusion-speedup2017/v5-rollback/。
+- full_source 分支的 dx3 WIP 完整保留（compat 已 git checkout 还原到 fe188ab 状态，工作区干净）；回滚所用临时覆盖未提交。恢复推进时的入口：DEBUG-NOTES-fmt12.md（(12,4,512) 2^63 饱和待查）→ dx3 收敛 → v7 构建 → 部署。
 
 ### 2026-10-31 原 SD 卡 SSH 恢复（本轮验证）
 
