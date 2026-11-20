@@ -146,6 +146,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 | 任务 ID | 负责人 | 状态 | 修改范围 | 独占资源/实际锁 | 最近更新 | 下一步/交接 |
 | --- | --- | --- | --- | --- | --- | --- |
+| resident-1202-release | Codex | 已完成 | compat/head2017/、README.md、共享交接 | 无设备占用 | 2026-11-20 | 1.202 tok/s 原分块常驻版，`codex/axi-resident-1202` |
 | context-init | 本轮 Codex | 已完成 | R/AGENTS.md、R/docs/PROJECT_CONTEXT.md、R/README.md | 无 | 2026-10-28 | 已建立共享入口；实现任务待用户指定 |
 | readiness-audit | 本轮 Codex | 已完成 | R/docs/PROJECT_CONTEXT.md；只读检查 D:/shuji | 无 | 2026-10-28 | 见第 9 节；板端系统状态仍待用户确认 |
 | board-discovery | 本轮 Codex | 已完成 | 串口只读系统/网络查询；R/docs/PROJECT_CONTEXT.md | COM13 已关闭释放 | 2026-10-28 | 已确认 PYNQ 启动；电脑有线网卡与板卡不在同一 IPv4 子网 |
@@ -370,3 +371,9 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 结论 a〔历史记录+推算〕：**1.5B 换型不可行**。内存墙：Q4_K_M 940.4/1065.6MB、Q3_K_M 786.0/881.6MB 均超 783MB 极限预算；IQ3_XS/Q2_K 能进内存但两代引擎（Q4_K/Q5_0+Q8_0）不支持该格式、CPU IQ kernel 无 NEON（推断 0.1~0.2 tok/s）。带宽墙：1.5B decode 每 token 实读 ≈787MB〔推算〕，5 tps 需 3.9GB/s > 实测聚合 1.96GB/s（亦近 DDR3-1066 32-bit 理论峰 4.26 的 92%），单流无权重重用；全模型完美流式上限仅 ~2.5~3.4 tok/s 且前提（进内存）不成立。融合 runtime 若接 1.5B，gate/up 打包缓存约 0.55GiB〔推算：0.5B 实测 149.625MiB × 3.86〕更装不下。5 tps 是 0.5B 全卸载口径的带宽上限，与 1.5B 不兼容。
 - 结论 b〔源码检查+推算〕：**0.5B 不量化（F16）不够**。已核实当前部署文件 embed/lm_head 共享单张量（`token_embd.weight` Q8_0 144.7MB，无独立 output.weight），参数 0.494B → F16 文件 ≈988MB，超 783MB 极限预算 ~26%，且已超空载可用 872MB（未含任何运行缓冲）；F32 ≈1.98GB 更不可能。装不下即触发 SD 11.4MB/s 抖页（每 token 至少 +18s）。两代 PL 引擎均无 F16 权重路径；CPU F16 decode 推断 ~0.2 tok/s。能落地的精度上限：全 Q8_0 ≈527MB / 全 Q6_K ≈405MB（ctx128/b64 可装，推断 CPU ~0.4 tok/s）；F16 需换 1.5~2GB RAM 平台。
 - 未验证项：以上未在板卡复测；内存/带宽数字为 2026-10-25 历史实测。
+
+
+### AX7020 Resident 1.202 发布交接
+
+- 本分支收录 7168 行分块、384 MiB CMA 和 `--poll 50` 的常驻版。板测依据与复现入口在 `compat/head2017/BOARD-RESULT.md` 和 `RESIDENT.md`。
+- 推理和硬件产物按文档构建，原始权重、日志和本机文件未入库。数值结论限同前缀对照与该测试提示词。

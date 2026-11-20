@@ -4,6 +4,8 @@ For agents sharing this project, start with [AGENTS.md](AGENTS.md) and the [shar
 
 Private project snapshot for the ALINX AX7020 / Zynq-7020 board. The primary reproducible hardware baseline is the **four-instance B-Lite overlay**. The Q5_0/Q8_0 exact-scale path is included as experimental source and is not the deployed board baseline.
 
+[AX7020 Resident 1.202](compat/head2017/RESIDENT.md) is the resident DMA configuration measured at **1.202 token/s** on the AX7020. See the [paired board benchmark](compat/head2017/BOARD-RESULT.md).
+
 ## Delivery contents
 
 The full source snapshot is stored as numbered 600 kB parts in `source/`. Reassemble and unpack it from a fresh clone:
