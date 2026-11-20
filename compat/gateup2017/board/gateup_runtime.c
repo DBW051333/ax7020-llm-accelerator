@@ -19,7 +19,7 @@
 #define CACHE_BYTES (192u<<20)
 struct props {uint32_t handle,flags;uint64_t size,paddr;uint32_t domain;};
 struct bo {unsigned id;uint32_t pa;void *map;size_t bytes;int allocated;};
-struct entry {const void *gate,*up;int rows,k;size_t gs,us,bytes;unsigned char *data;};
+struct entry {const void *gate,*up;int rows,k,fmt;size_t gs,us,bytes;unsigned char *data;};
 static struct entry cache[32];
 static size_t cache_bytes;
 static struct bo tx[LANES],rx[LANES];
@@ -100,7 +100,7 @@ static int finite_half(const void *p){uint16_t h;memcpy(&h,p,2);return ((h>>10)&
 static struct entry *prepare(const void *g,const void *u,int rows,int k,size_t gs,size_t us){
  struct entry *c=NULL;
  for(int j=0;j<32;j++){
-  if(cache[j].gate==g&&cache[j].up==u&&cache[j].rows==rows&&cache[j].k==k&&cache[j].gs==gs&&cache[j].us==us)return &cache[j];
+  if(cache[j].gate==g&&cache[j].up==u&&cache[j].rows==rows&&cache[j].k==k&&cache[j].fmt==21&&cache[j].gs==gs&&cache[j].us==us)return &cache[j];
   if(!cache[j].data&&!c)c=&cache[j];
  }
  size_t bytes=(size_t)rows*(k/32)*48;
@@ -112,7 +112,7 @@ static struct entry *prepare(const void *g,const void *u,int rows,int k,size_t g
   if(!finite_half(src)){free(p);return NULL;}
   memcpy(p+(size_t)r*nb*48+(phase*nb+b)*24,src,22);
  }
- *c=(struct entry){g,u,rows,k,gs,us,bytes,p};cache_bytes+=bytes;misses++;return c;
+ *c=(struct entry){g,u,rows,k,21,gs,us,bytes,p};cache_bytes+=bytes;misses++;return c;
 }
 int gateup_fused(const void *g,const void *u,const void *q8,float *out,int rows,int k,size_t gs,size_t us,const char *name){
  if(!gateup_enabled()||!g||!u||!q8||!out||rows<4||rows>LANES*RX_ROWS||k<=0||k>8192||k%32||
@@ -171,5 +171,95 @@ int gateup_fused(const void *g,const void *u,const void *q8,float *out,int rows,
   }
  }
  calls++;macs+=(uint64_t)2*rows*k;backend_ns+=now()-start;rc=0;
+done:pthread_mutex_unlock(&mutex);return rc;
+}
+/* Format-12 single-matrix dispatch: Q4_K rows streamed as per-row
+ * superblocks (K/256 x 144B) taken straight from the GGUF row layout.
+ * Same four-lane split, staging, locking and statistics as gateup_fused. */
+static struct entry *prepare12(const void *w,int rows,int k,size_t ws){
+ struct entry *c=NULL;
+ for(int j=0;j<32;j++){
+  if(cache[j].gate==w&&!cache[j].up&&cache[j].rows==rows&&cache[j].k==k&&cache[j].fmt==12)return &cache[j];
+  if(!cache[j].data&&!c)c=&cache[j];
+ }
+ int sbs=k/256;
+ size_t rowbytes=(size_t)sbs*144;
+ size_t bytes=(size_t)rows*rowbytes;
+ if(!c||bytes>CACHE_BYTES-cache_bytes)return NULL;
+ unsigned char *p=calloc(1,bytes);if(!p)return NULL;
+ for(int r=0;r<rows;r++){
+  const unsigned char *src=(const unsigned char*)w+(size_t)r*ws;
+  for(int b=0;b<sbs;b++){
+   const unsigned char *sbk=src+(size_t)b*144;
+   if(!finite_half(sbk)||!finite_half(sbk+2)){free(p);return NULL;}
+   memcpy(p+(size_t)r*rowbytes+(size_t)b*144,sbk,144);
+  }
+ }
+ FILE *dbg=fopen("/tmp/row12.bin","wb");
+ if(dbg){fwrite(p,rowbytes,1,dbg);fclose(dbg);fprintf(stderr,"GATEUP row12 dump rows=%d rowbytes=%zu d=%02x%02x dmin=%02x%02x\n",rows,rowbytes,p[1],p[0],p[3],p[2]);}
+ *c=(struct entry){w,NULL,rows,k,12,ws,0,bytes,p};cache_bytes+=bytes;misses++;return c;
+}
+int gateup_matvec(const void *w,const void *q8,float *out,int rows,int k,size_t ws,const char *name){
+ if(!gateup_enabled()||!w||!q8||!out||rows<4||rows>LANES*RX_ROWS||k<=0||k>8192||k%256||
+    ws<(size_t)(k/256)*144)return -1;
+ int nb=k/32,sbs=k/256;
+ size_t prefix=8+(size_t)nb*40,rowbytes=(size_t)sbs*144;
+ if(prefix+(size_t)((rows+3)/4)*rowbytes>TX_BYTES)return -1;
+ pthread_mutex_lock(&mutex);
+ uint64_t start=now();int rc=-1;
+ if(initialize())goto done;
+ struct entry *c=prepare12(w,rows,k,ws);if(!c){fprintf(stderr,"GATEUP pack failed %s\n",name);goto done;}
+ {FILE *dbg=fopen("/tmp/act12.bin","wb");
+  if(dbg){fwrite(q8,(size_t)nb*34,1,dbg);fclose(dbg);}}
+ int first=0,counts[LANES],starts[LANES];
+ for(int i=0;i<LANES;i++){
+  counts[i]=rows/4+(i<rows%4);starts[i]=first;first+=counts[i];
+ }
+ for(int b=0;b<nb;b++)
+  if(!finite_half((const char*)q8+b*34)){fprintf(stderr,"GATEUP invalid activation\n");goto done;}
+ __sync_synchronize();
+ for(int i=0;i<LANES;i++){
+  wr(i,0x34,0x7000);wr(i,0x30,1);wr(i,0x48,rx[i].pa);wr(i,0x58,counts[i]*8);
+ }
+ __sync_synchronize();
+ uint64_t t=now();
+ for(int i=0;i<LANES;i++){
+  unsigned char *p=tx[i].map;
+  uint64_t header=0x58ull|((uint64_t)12<<8)|((uint64_t)counts[i]<<16)|((uint64_t)nb<<32);
+  memcpy(p,&header,8);
+  for(int b=0;b<nb;b++){
+   memset(p+8+b*40,0,40);memcpy(p+8+b*40,(const char*)q8+b*34,34);
+  }
+  memcpy(p+prefix,c->data+(size_t)starts[i]*rowbytes,(size_t)counts[i]*rowbytes);
+  if(sync_bo(device,tx[i].id,0,prefix+(size_t)counts[i]*rowbytes,0))goto done;
+  wr(i,4,0x7000);wr(i,0,1);wr(i,0x18,tx[i].pa);wr(i,0x28,prefix+(size_t)counts[i]*rowbytes);
+ }
+ __sync_synchronize();
+ unsigned pending=15;
+ while(pending){
+  for(int i=0;i<LANES;i++)if(pending&(1u<<i)){
+   uint32_t m=rd(i,4),st=rd(i,0x34);
+   if((m|st)&0x70){fprintf(stderr,"GATEUP DMA error %s lane%d %08x/%08x\n",name,i,m,st);goto done;}
+   if((m&0x1000)&&(st&0x1000))pending&=~(1u<<i);
+  }
+  if(now()-t>2000000000ull){
+   fprintf(stderr,"GATEUP DMA timeout %s\n",name);
+   for(int i=0;i<LANES;i++)
+    fprintf(stderr," lane%d mm2s_c=%08x mm2s_s=%08x s2mm_c=%08x s2mm_s=%08x rxlen=%u\n",
+     i,rd(i,0),rd(i,4),rd(i,0x30),rd(i,0x34),rd(i,0x58));
+   goto done;
+  }
+ }
+ dma_ns+=now()-t;
+ for(int i=0;i<LANES;i++){
+  if(sync_bo(device,rx[i].id,1,(size_t)counts[i]*8,0))goto done;
+  __sync_synchronize();
+  if(rd(i,0x58)!=(uint32_t)counts[i]*8){fprintf(stderr,"GATEUP receive length mismatch\n");goto done;}
+  for(int r=0;r<counts[i];r++){
+   uint32_t bits=(uint32_t)((uint64_t*)rx[i].map)[r];float v;memcpy(&v,&bits,4);
+   if(!isfinite(v))goto done;out[starts[i]+r]=v;
+  }
+ }
+ calls++;macs+=(uint64_t)rows*k;backend_ns+=now()-start;rc=0;
 done:pthread_mutex_unlock(&mutex);return rc;
 }

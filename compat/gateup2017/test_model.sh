@@ -18,11 +18,13 @@ for mode in forced-verify fused fused-repeat cpu-repeat cpu-perf; do
   "${extra[@]}" timeout 360 bin/llama-cli-gateup "${common[@]}" \
   >"logs/$mode.stdout" 2>"logs/$mode.stderr"
  grep 'GATEUP-STATS\|eval time' "logs/$mode.stderr"
- # 23 decode steps *24 layers, plus the final prefill layer compacted to one column.
- if [ "$enabled" = 1 ];then grep -Eq 'GATEUP-STATS calls=553 ' "logs/$mode.stderr";fi
+ # 553 fused calls (23 decode steps x24 layers + 1 compacted prefill column)
+ # plus 276 Q4_K Down calls (23 decode steps x12 Q4_K layers) in full_source.
+ if [ "$enabled" = 1 ];then grep -Eq 'GATEUP-STATS calls=829 ' "logs/$mode.stderr";fi
  echo "GATEUP-MODE-DONE $mode"
 done
 test "$(grep -c GATEUP-VERIFY logs/forced-verify.stderr)" -eq 553
+test "$(grep -c GATEUP-DOWN-VERIFY logs/forced-verify.stderr)" -eq 276
 cmp logs/cpu.logits logs/cpu-repeat.logits
 cmp logs/cpu.stdout logs/cpu-perf.stdout
 cmp logs/fused.stdout logs/fused-repeat.stdout

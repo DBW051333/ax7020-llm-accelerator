@@ -1,6 +1,8 @@
 # AX7020 共享项目上下文
 
-最后维护：2026-10-29（Asia/Shanghai）。初次建立基于提交 `cb76351` 的交付快照。
+最后维护：2026-10-31（Asia/Shanghai）。初次建立基于提交 `cb76351` 的交付快照。
+
+2026-10-31：用户更换同型号板卡后，现已换回原 SD 卡；串口确认 Linux 与 SSH 正常，恢复临时辅助地址后 SSH 登录实测成功。下述已加载 overlay 及性能结论属于此前板测，不能据此推定本次开机的 FPGA 状态。
 
 当前工作区更新：源码已通过 `tools/restore_source.py` 的等价校验恢复到 `R/accel`（Git 忽略的只读快照），2017.4 适配入口为 `compat/vivado2017/rebuild.ps1`。下文“未解包”等表述是初始化时的历史状态；以最新交接和任务表为准。
 
@@ -144,6 +146,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 | 任务 ID | 负责人 | 状态 | 修改范围 | 独占资源/实际锁 | 最近更新 | 下一步/交接 |
 | --- | --- | --- | --- | --- | --- | --- |
+| resident-1202-release | Codex | 已完成 | compat/head2017/、README.md、共享交接 | 无设备占用 | 2026-11-20 | 1.202 tok/s 原分块常驻版，`codex/axi-resident-1202` |
 | context-init | 本轮 Codex | 已完成 | R/AGENTS.md、R/docs/PROJECT_CONTEXT.md、R/README.md | 无 | 2026-10-28 | 已建立共享入口；实现任务待用户指定 |
 | readiness-audit | 本轮 Codex | 已完成 | R/docs/PROJECT_CONTEXT.md；只读检查 D:/shuji | 无 | 2026-10-28 | 见第 9 节；板端系统状态仍待用户确认 |
 | board-discovery | 本轮 Codex | 已完成 | 串口只读系统/网络查询；R/docs/PROJECT_CONTEXT.md | COM13 已关闭释放 | 2026-10-28 | 已确认 PYNQ 启动；电脑有线网卡与板卡不在同一 IPv4 子网 |
@@ -153,7 +156,10 @@ vivado -mode batch -source bd_dma_quad.tcl
 | board-validation2017 | 本轮 Codex | 已完成 | tools/、compat/vivado2017/、docs/；板端独立测试目录 | 进程已结束、锁已释放；新 overlay 保留 | 2026-10-28 | 测试完成；模型文本一致性失败，原因待定位，不能标记整项目验收通过 |
 | logits-diagnosis2017 | 本轮 Codex | 已完成 | compat/vivado2017/diagnostics/、docs/；板端独立诊断程序与日志 | 进程结束、锁已查释放；原体验程序未变 | 2026-10-29 | 已定位近似算术触发放大及首次候选翻转；具体层间量化边界和质量可接受性仍未验证 |
 | gateup-fusion2017 | 本轮 Codex | 已完成 | compat/gateup2017/、docs/、README.md；独立构建与板端部署目录 | 构建/测试进程结束，锁已查释放；板端保留融合overlay | 2026-10-29 | 融合硬件、局部数值和性能测试完成；约0.667tps，相对CPU+22.7%/原Q4+22.0%；文本一致性失败，质量等价未验证 |
+| replacement-ssh | 本轮 Codex | 已完成 | 原SD卡串口查询及eth0临时辅助地址；docs/PROJECT_CONTEXT.md | COM11和SSH均已关闭释放；未加载overlay | 2026-10-31 | 主机指纹核对及密码登录通过；辅助地址重启失效 |
 | fusion-speedup2017 | ZCode(2026-10-30会话) | 已完成 | compat/gateup2017/（RTL 线速重写+dot32 握手+runtime 流水化+prepare.py）、build/gateup2017/（tag quad-2017-v5）、docs/；不动 accel/ | 构建/测试进程结束，锁已查释放；板端 v5 overlay 已加载，v4 归档于 logs-v4/overlay-v4 | 2026-10-30 | 0.747tps（较CPU+37.5%/较v4融合+11.9%）；553次数值检查全过且最差relative L2与v4相同（逐位同源）；文本一致性仍失败；详见 docs/fusion-speedup2017/RESULT.md |
+| pl-roadmap2017 | ZCode(2026-10-30会话) | 已完成 | docs/pl-roadmap-20261030/PLAN.md、docs/PROJECT_CONTEXT.md；纯分析未改代码/硬件 | 无独占资源 | 2026-10-30 | PL 资源扩展路线（Down/Attention/LMHead 入 PL + DSP 化 MAC）与带宽上限推算（约5.0tps@实测带宽）；全部估算需独立立项验证 |
+| full-source-20261030 | ZCode(2026-10-30/31会话) | 阶段1挂起（板回滚v5） | 分支 dev/ligan-full-source；compat/gateup2017/（fmt12 引擎收敛+runtime matvec+callback Down 派发+test_model.sh 829 预期）、build/gateup2017/quad-2017-v6/ | 硬件已验收未上板；板端连接中断（COM13 消失、169.254.32.1 半丢包无 SSH）待用户恢复 | 2026-10-31 | 阶段1：fmt12 引擎+runtime/callback 完成并上板联调——发现并修复 4 类问题（matvec 包头 0x1558|12<<8=0x17 非法格式→BAD 态；回调 rows 取 dst->ne[1]=1；Q4_K vec_dot 需 Q8_K 校验改 to_float 参考；**激活块 Q8_0 scale 缺失（498x 偏差根因，dump 重算 77.35 vs 板上 7.69 证实）→ dx3 三因子 scaler 已实现**，Q5 回归绿）；遗留 (12,4,512) row0 2^63 饱和一个数值问题（DEBUG-NOTES-fmt12.md #5）；v6 bit 不含 dx3，收敛后需 v7 重建；板端连接已恢复（169.254.32.99，重启后 eth0 持久双地址） |
 
 状态使用：进行中 / 等待外部条件 / 待交接 / 已完成 / 已取消。时间不足以证明资源已释放；记录过期时先核查实际进程并协调，不能直接夺取。软件进程互斥锁不能自动覆盖另一个驱动、远程主机或人工操作。
 
@@ -315,3 +321,59 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 限制：文本一致性失败原样保留（引擎与 v4 数值逐位同源，属既有未解决问题），质量等价未验证；剩余瓶颈为 CPU 侧打包/flush（约 14ms/调用）。板端 169.254.32.1/16 为本轮临时辅助地址（重启失效），eth0:1 192.168.2.99/24 为既有配置非本轮所加；串口/SSH 用毕释放，锁可获取，无遗留进程。
 - 证据：docs/fusion-speedup2017/（板端五模式日志、verify 明细、loaded.json）；build/gateup2017/{quad-2017-v5,bitexact,rtl-v4ref}。原始 v4 板端证据未覆盖（logs-v4/overlay-v4 归档）。
 
+### PL 资源扩展路线与带宽上限分析（2026-10-30，分析完成）
+
+- 任务 pl-roadmap2017（ZCode 同会话，fusion-speedup2017 之后）：将三轮探索固化为 docs/pl-roadmap-20261030/PLAN.md——资源账本（v5 实测：LUT 48%/DSP 10.9%/BRAM 60%）、DSP48E1 能力映射（2 MAC/片/拍位精确打包、层内串行分时复用）、算子迁移排序（Down≈341ms → Attention≈259ms → LMHead≈444ms，后两者为估算）、最大部署资源预算（LUT 66%/DSP 33%/BRAM 69%）与 tps 阶梯（0.747→约0.9→约1.0→2.5~4.0→5.0 带宽上限，端口理论 6.7）。
+- 全部"估算"项未实现、未验证；任何落地须独立走仿真→时序→板测。文本一致性失败仍为既有未解决问题。交互式流程图为本轮会话可视化产物，不在仓库内。
+- 本文件在 dev/ligan 上曾短暂包含未解决的合并冲突标记（提交 65d7e99），本提交以 scheme/fusion-throughput 的版本为基底重建修正。
+
+### full-source 迁移任务启动（2026-10-31，WIP）
+
+- 用户指令：按迁移排序（Down→Attention→LMHead）开发并推送到 dev/ligan/full_source。**git 限制**：dev/ligan 已存在导致子路径分支名不可用，实际分支为 `dev/ligan-full-source`（已推送，基点=dev/ligan 515ce2c 合并 scheme/fusion-throughput 220a6fe）。
+- 模型张量实测（gguf-py）：Attention Q/K/O 全 24 层 Q5_0；V 混合 12 层 Q5_0 + 12 层 Q8_0（引擎 format 8 可覆盖，Q/K/V/O 均带 F32 bias 需 CPU 侧补加）；token_embd=Q8_0 [151936,896] 证实 LM Head 假设。
+- 阶段1（Down 入 PL）设计定稿并部分实现：Q4_K 作为 format 12 接入统一引擎——dot32 增加 Σx 输出、双项 scaler（term=(d·sc)·Snq−(dmin·m)·Sx，Q5 路径 dx2=0 语义逐位不变、68 行回归通过）、乒乓缓冲扩至 18 字/超块、按格式预算。已修三处 bug（scale 切片偏移、fp16_of_6b 指数位宽、向量打包高位来源），**遗留两处数值问题（case A 2^-15 系统偏差、case B term2 恒零）**，fmt12 配置暂从验收向量摘除保持 GATEUP-VERIFIED 绿灯；运行时/回调未接入（不会派发错误数据到硬件）。
+- 续作入口：compat/gateup2017/DEBUG-NOTES-fmt12.md（含 fp16_of_6b concat 截断 bug 的修复写法、恢复步骤、运行时接入设计）。
+
+### full-source 阶段1（Down 入 PL）开发完成、等待板测（2026-10-31）
+
+- 分支 dev/ligan-full-source（提交至 "runtime gateup_matvec + Down 派发接入 + v6 硬件验收"）。
+- **fmt12（Q4_K）引擎调试收敛**：四类 bug 修复——fp16_of_6b 重写（12 位 concat 整体错位+尾数自定宽截断）、get_sm6 的 jj 3 位加法回绕、dot32 的 sx 用组合 x_sum（消费拍已换块，改 x_sum_r 寄存）、integer_sx 零扩展（13 位片段赋 21 位 signed 寄存器需 $signed() 重解释）。**GATEUP-VERIFIED 76 行**（含 (12,2,256)/(12,4,512)/(12,2,4864) 三个随机配置；Q5/Q8 主路径 max_abs 与 v5 一致）。调试方法：逐拍 dot32 内部跟踪 + 逐块 scaler 输入与 Python 从包重算期望值对照（dot 384/384 一致后锁定 sx 与符号扩展）。教训：Verilog concat/移位自定宽与 part-select 无符号是本次全部四类 bug 的共同根源。
+- runtime/callback：gateup_matvec（fmt12 单矩阵派发，缓存按格式标签区分，12 层 Q4_K 缓存 29.4MB，总 179MB<192MB）；gateup_down_compute（Q8_0 量化+派发+verify 下 Q4_K vec_dot 参考）；图分支对 Q4_K [4864,896] 的 Down 包装为 custom3_shape [896,1]（Q6_K 层保持 CPU）；test_model.sh 预期 553→829 次调用（+276 Down）、DOWN-VERIFY 276。
+- 硬件 quad-2017-v6 已验收：WNS+0.114/WHS+0.054 @83.33MHz、LUT 78.36%（fmt12 增 ~16k：18 字乒乓×2+双项 scaler+解码组合逻辑）、BRAM 84 不变；bit d2b4a33fb7677c9b5e1c304107d79500fb60ae7d182bb9fd68aacf57d76d16bb、HWH 28133688a9542acdfb5407c592eaf03967d842e05551e479077f74473730dd66；64 项网表+33 项 HWH 检查过、DRC 无 Error/Critical。
+- **板端部署挂起**：COM13 串口消失（USB 枚举丢失）、169.254.32.1 ping 半丢包且 TCP/22 无法建立（跨会话板卡/线缆状态变化）；全部产物与逐步命令见 compat/gateup2017/DEPLOY-v6.md，连接恢复后可一次执行。未验证项：板端 829 调用、DOWN-VERIFY、tps 对比（预期：Down 派发节省约 250~340ms/步，tps 0.75→0.85~0.9，估算）。
+
+
+
+### full-source 阶段1 板端联调（2026-10-31，进行中）
+
+- 板端连接恢复：板卡重启后 eth0 持久双地址 192.168.2.99/24 + 169.254.32.99/16（SD 镜像网络配置含 APIPA），SSH 169.254.32.99 指纹校验通过；COM13 重枚举为 COM11 但控制台无输出（未再依赖）。开机 13 分钟、锁空闲、PYNQ/XRT 正常。
+- 部署联调四轮，逐层修复：matvec 包头格式字节错误（引擎 BAD 态，DMA 状态转储定位）；回调 rows=dst->ne[1]=1 静默拒绝；校验参考 Q4_K vec_dot 配 Q8_0 错误配对（改 to_float×原始 F32 输入）；**激活 scale 缺失（498× 偏差）→ dx3 三因子 scaler**。
+- 关键教训：bundle.py 不运行 prepare_software.py（修复三轮未上板）；碎片化字符串补丁不可靠（scaler 文件曾成嵌合体，整文件重写解决）；引擎 BAD 态后必须整片重载（融合调用也会随后卡死）。
+- 当前：fmt12 单超块行 (12,2,256) 板级路径就绪；(12,4,512) row0 有 2^63 累加饱和待查；fmt12 配置摘离验收向量（Q5/Q8 回归绿）；v7 bit 待 dx3 收敛后构建。
+
+### 板端回滚 v5、恢复可用（2026-10-31，本轮实测）
+
+- 用户决策回滚到 v5 可用状态。方法：git 220a6fe 的 v5 软件侧源码（runtime/callback/prepare_software/test_model）临时恢复 → prepare_software+bundle → 上板重编译 → **二进制哈希精确还原 574fb6ee**（源码级可复现构建验证）→ 重载 v5 overlay（bit 91bbc865）→ 五模式测试组 **GATEUP-NUMERIC-AND-REPEAT-PASS**。
+- 板端当前状态：**v5 融合配置可用**——fused 30760.72ms=0.7474 tps、复测 30914.35ms=0.7434；CPU 0.5410/0.5411；GATEUP-STATS calls=553 ✓；TEXT-PARITY-FAIL 为既有已知限制。手动入口 `cd /home/xilinx/ax7020-gateup2017 && bash run.sh`。证据 docs/fusion-speedup2017/v5-rollback/。
+- full_source 分支的 dx3 WIP 完整保留（compat 已 git checkout 还原到 fe188ab 状态，工作区干净）；回滚所用临时覆盖未提交。恢复推进时的入口：DEBUG-NOTES-fmt12.md（(12,4,512) 2^63 饱和待查）→ dx3 收敛 → v7 构建 → 部署。
+
+### 2026-10-31 原 SD 卡 SSH 恢复（本轮验证）
+
+- 用户确认换回原 SD 卡。COM11/115200 收到 xilinx@pynq shell；电脑物理网口 Up/100Mbps，板端 eth0 carrier=1。板卡原静态 IPv4 与电脑 APIPA 地址不在同一子网；此前临时辅助地址已消失。
+- 板端 ssh 服务 active，IPv4/IPv6 的 TCP 22 均监听；经串口核对 ED25519 指纹与原 SD 卡历史身份一致。
+- 经串口 sudo 在 eth0 恢复与电脑同网段的临时辅助 IPv4，保留原静态地址。通过指纹校验后 SSH 密码认证成功，hostname/whoami/uptime/ip/ssh 查询 exit 0。具体连接地址留在当前会话，不作为项目常量。
+- 未修改持久网络配置，未重启、加载 overlay 或运行模型；串口和 SSH 会话均已关闭。本次仅恢复连通性；临时地址在重启后消失，持久方案可将电脑有线网口配置为板卡原静态地址的同子网地址。
+
+### 2026-10-31 模型换型与不量化可行性分析（ZCode 只读分析会话；重追加）
+
+- **协作警示**：本会话曾于 2026-10-31 在任务表与第 8 节追加 `qwen15b-feasibility` 条目，随后被另一并行会话用其缓存版本整体覆盖丢失（该内容未进过任何提交）。写本文前请重新读取最新文件，避免再发生 lost-update。
+- 背景：用户问（a）0.5B 换 1.5B 是否可行、能否达 5 tps；（b）0.5B 完全不量化 DDR3 够不够。本轮纯文档分析，无板端/构建操作；结论依据 `accel/docs/更大模型评估.md`（2026-10-25 板端实测：可用 872~873MB、SD 顺序读 11.4MB/s、compute buffer 公式、783MB 极限预算）与 `docs/pl-roadmap-20261030/PLAN.md` §6（0.5B 全卸载带宽上限 ≈5.0 tps = 1.96GB/s ÷ 392MB/token）。
+- 结论 a〔历史记录+推算〕：**1.5B 换型不可行**。内存墙：Q4_K_M 940.4/1065.6MB、Q3_K_M 786.0/881.6MB 均超 783MB 极限预算；IQ3_XS/Q2_K 能进内存但两代引擎（Q4_K/Q5_0+Q8_0）不支持该格式、CPU IQ kernel 无 NEON（推断 0.1~0.2 tok/s）。带宽墙：1.5B decode 每 token 实读 ≈787MB〔推算〕，5 tps 需 3.9GB/s > 实测聚合 1.96GB/s（亦近 DDR3-1066 32-bit 理论峰 4.26 的 92%），单流无权重重用；全模型完美流式上限仅 ~2.5~3.4 tok/s 且前提（进内存）不成立。融合 runtime 若接 1.5B，gate/up 打包缓存约 0.55GiB〔推算：0.5B 实测 149.625MiB × 3.86〕更装不下。5 tps 是 0.5B 全卸载口径的带宽上限，与 1.5B 不兼容。
+- 结论 b〔源码检查+推算〕：**0.5B 不量化（F16）不够**。已核实当前部署文件 embed/lm_head 共享单张量（`token_embd.weight` Q8_0 144.7MB，无独立 output.weight），参数 0.494B → F16 文件 ≈988MB，超 783MB 极限预算 ~26%，且已超空载可用 872MB（未含任何运行缓冲）；F32 ≈1.98GB 更不可能。装不下即触发 SD 11.4MB/s 抖页（每 token 至少 +18s）。两代 PL 引擎均无 F16 权重路径；CPU F16 decode 推断 ~0.2 tok/s。能落地的精度上限：全 Q8_0 ≈527MB / 全 Q6_K ≈405MB（ctx128/b64 可装，推断 CPU ~0.4 tok/s）；F16 需换 1.5~2GB RAM 平台。
+- 未验证项：以上未在板卡复测；内存/带宽数字为 2026-10-25 历史实测。
+
+
+### AX7020 Resident 1.202 发布交接
+
+- 本分支收录 7168 行分块、384 MiB CMA 和 `--poll 50` 的常驻版。板测依据与复现入口在 `compat/head2017/BOARD-RESULT.md` 和 `RESIDENT.md`。
+- 推理和硬件产物按文档构建，原始权重、日志和本机文件未入库。数值结论限同前缀对照与该测试提示词。

@@ -32,9 +32,50 @@ def wblock(kind,scale,values):
     uq=[v+16 for v in values]
     qh=sum(((v>>4)&1)<<i for i,v in enumerate(uq))
     return half(scale)+struct.pack('<I',qh)+bytes((uq[i]&15)|((uq[i+16]&15)<<4) for i in range(16))+b'\0'*2
+# fmt12 (Q4_K) configs held out: single-superblock rows (K=256) pass with the
+# dx3 activation-scale path, but a K=512 row still produces a saturated
+# accumulator (see compat/gateup2017/DEBUG-NOTES-fmt12.md finding #5).
 configs=[(21,8,32,False),(21,8,64,False),(21,16,896,False),(21,4,8192,False),
          (21,8,896,True),(5,8,896,False),(8,8,896,False),(21,8,896,False)]
+def q4k_superblock(d,dmin,sc,m,data):
+    # 12 scale bytes packed exactly as blite_core get_sm unpacks:
+    #   qq[j]   = sc[j]&0x3F | (sc[j+4]&0x3)<<6   (j<4)
+    #   qq[4+j] = m[j]&0x3F  | (m[j+4]&0x3)<<6    (j<4)
+    #   qq[8+j] = sc[4+j]&0xF | (m[4+j]&0xF)<<4   (j<4)
+    qq=[0]*12
+    for j in range(4):
+        qq[j]=(sc[j]&0x3F)|(((sc[j+4]>>4)&0x3)<<6)
+        qq[4+j]=(m[j]&0x3F)|(((m[j+4]>>4)&0x3)<<6)
+        qq[8+j]=(sc[4+j]&0xF)|((m[4+j]&0xF)<<4)
+    return half(d)+half(dmin)+bytes(qq)+bytes(data)
 for fmt,rows,k,zero in configs:
+    if fmt==12:
+        nb=k//32;sbs=nb//8
+        scales=[struct.unpack('<e',half(r.choice([0.001,0.01,0.03,2**-20])))[0] for _ in range(nb)]
+        xs=[[0 if zero else r.randrange(-127,128) for _ in range(32)] for _ in range(nb)]
+        raw=struct.pack('<Q',0x58|(fmt<<8)|(rows<<16)|(nb<<32))
+        raw+=b''.join(half(scales[s])+struct.pack('32b',*xs[s])+b'\0'*6 for s in range(nb))
+        for row in range(rows):
+            total=0.
+            for sb in range(sbs):
+                d=struct.unpack('<e',half(r.choice([0.001,0.002,0.005,0.01])))[0]
+                dmin=struct.unpack('<e',half(r.choice([0.0005,0.001,0.002])))[0]
+                sc=[r.randrange(64) for _ in range(8)];m=[r.randrange(64) for _ in range(8)]
+                data=[0]*128
+                for j in range(8):
+                    for grp in range(4):
+                        for pp in range(8):
+                            v=r.randrange(16)
+                            beat=(j>>1)*4+grp;byt=beat*8+pp
+                            if j&1:data[byt]|=v<<4
+                            else:data[byt]|=v
+                            e=j*32+grp*8+pp
+                            ascale=scales[sb*8+j]
+                            total+=ascale*(sc[j]*d*xs[sb*8+j][grp*8+pp]*v-m[j]*dmin*xs[sb*8+j][grp*8+pp])
+                raw+=q4k_superblock(d,dmin,sc,m,data)
+            results.append(f(struct.unpack('<f',struct.pack('<f',total))[0]));last.append(int(row==rows-1))
+        packet+=list(struct.unpack('<'+'Q'*(len(raw)//8),raw));raw=b''
+        continue
     kind=5 if fmt==21 else fmt;nb=k//32
     scales=[struct.unpack('<e',half(r.choice([0.001,0.01,0.03,2**-20])))[0] for _ in range(nb)]
     xs=[[0 if zero else r.randrange(-127,128) for _ in range(32)] for _ in range(nb)]

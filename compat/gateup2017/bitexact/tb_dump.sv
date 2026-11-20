@@ -13,6 +13,10 @@ module tb_dump;
  integer i=0,rx=0,seed=7;reg dumped=0;
  always @(posedge clk)begin
   orr<=rst_n&&((($random(seed))&3)!=0);
+  if(rst_n && dut.scale_fire)
+   $display("SBLK blk=%0d dot=%0d sx=%0d dw=%h dx=%h dw2=%h dx2=%h first=%b last=%b",
+    dut.res_blk,dut.dot,dut.dot_sx,dut.res_dw,dut.res_scale,dut.res_dw2,dut.res_dx2,
+    dut.scaler.first_block,dut.scaler.last_block);
   if(ov&&orr)begin
    $fdisplay(fd,"%h %b",od[31:0],ol);
    rx=rx+1;
