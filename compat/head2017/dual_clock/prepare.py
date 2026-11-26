@@ -35,6 +35,7 @@ clk ps7/M_AXI_GP0_ACLK} \
     tcl = replace_once(tcl, '    eval $topology', hook.replace("@AXI@", str(axi)).replace("@CORE@", str(compute)))
     tcl = replace_once(tcl, "report_drc -file", """report_clock_interaction -file [file join $out clock_interaction.rpt]
 report_cdc -details -file [file join $out cdc.rpt]
+report_bus_skew -file [file join $out bus_skew.rpt]
 report_drc -file""")
     path.write_text(tcl)
     shutil.copyfile(here / "q58_dot32.sv", out / "rtl/q58_dot32.sv")

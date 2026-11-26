@@ -12,6 +12,29 @@ integer sum from the block accumulator. The optional scale pipeline splits
 FP16 scale multiplication, alignment, 112-bit accumulation and rounding.
 The experiment retains the released formats and full-vocabulary logits.
 
+## Reproduce the tested 125/100 MHz profile
+
+The 125/200 MHz implementation with the new scaler routed but missed timing
+at 200 MHz. For the board test, the same routed design was timed again at
+100 MHz on FCLK1. The tool checks that the generated 100 MHz HWH differs
+only in the FCLK1 metadata and that both builds have identical RTL and ROM.
+It preserves the original placement, clock exceptions and FIFO pointer
+constraints, checks setup, hold and bus skew, then produces a hash receipt.
+
+After running the 125/200 build below and retaining its routed checkpoint:
+
+```powershell
+python compat/head2017/dual_clock/prepare.py --compute 100 --scale-pipeline
+Push-Location build/head2017/dual-clock-125-100-pipe
+& D:/Xilinx/Vivado/2017.4/bin/vivado.bat -mode batch -source build_quad.tcl -tclargs bd
+Pop-Location
+& compat/head2017/dual_clock/verify.ps1 -Compute 100 -ScalePipeline
+python compat/head2017/dual_clock/requalify.py build/head2017/dual-clock-125-200-pipe build/head2017/dual-clock-125-100-pipe build/dual-board/recheck100
+```
+
+Use the bit/HWH pair and receipt from `build/dual-board/recheck100` for the
+board procedure below.
+
 ## Build and verify
 
 1. Run `python tools/restore_source.py` from the repository root.
