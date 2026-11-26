@@ -1,4 +1,5 @@
 """Build from the exact v5 sources, without changing either existing workspace."""
+import argparse
 from pathlib import Path
 import math
 import shutil
@@ -6,7 +7,9 @@ import subprocess
 
 src = Path(__file__).resolve().parent
 repo = src.parents[1]
-out = repo / 'build/head2017/decode'
+parser = argparse.ArgumentParser()
+parser.add_argument('--output', type=Path, default=repo / 'build/head2017/decode')
+out = parser.parse_args().output.resolve()
 rtl = out / 'rtl'
 rtl.mkdir(parents=True, exist_ok=True)
 rev = '220a6febac2df0602894cb925320676fc6455d11'

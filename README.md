@@ -6,6 +6,8 @@ Private project snapshot for the ALINX AX7020 / Zynq-7020 board. The primary rep
 
 [AX7020 Resident 1.202](compat/head2017/RESIDENT.md) is the resident DMA configuration measured at **1.202 token/s** on the AX7020. See the [paired board benchmark](compat/head2017/BOARD-RESULT.md).
 
+> [AX7020 A9 NEON + dual-clock Resident](compat/head2017/a9_decode/README.md) uses a 125 MHz AXI clock and a 100 MHz compute clock. It measured **1.296 token/s** in a paired 1024-context single-chat benchmark, with bitwise-identical logits over 24 fixed-history steps. See the [overlay rebuild and board results](compat/head2017/dual_clock/README.md).
+
 ## Delivery contents
 
 The full source snapshot is stored as numbered 600 kB parts in `source/`. Reassemble and unpack it from a fresh clone:
