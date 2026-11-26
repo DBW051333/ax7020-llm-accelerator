@@ -1,5 +1,7 @@
 # AX7020 dual-clock Resident experiment
 
+See [the board and timing results](RESULT.md) for the validated 125/100 MHz profile.
+
 The four AXI DMA paths, HP interfaces and AXI interconnect use FCLK0. Each
 lane has two independent-clock AXI4-Stream Data FIFOs between the DMA and
 the compute domain on FCLK1. Both domains derive their reset from the

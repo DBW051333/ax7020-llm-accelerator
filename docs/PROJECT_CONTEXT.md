@@ -377,3 +377,10 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 - 本分支收录 7168 行分块、384 MiB CMA 和 `--poll 50` 的常驻版。板测依据与复现入口在 `compat/head2017/BOARD-RESULT.md` 和 `RESIDENT.md`。
 - 推理和硬件产物按文档构建，原始权重、日志和本机文件未入库。数值结论限同前缀对照与该测试提示词。
+
+### 2026-11-26 双时钟 Resident 实现与板测
+
+- 实验分支 `codex/axi-dual-clock` 从 Resident 1.202 的发布分支建立。四路 HP/DMA 接 FCLK0，各 lane 的收发经独立时钟 FIFO 进入 FCLK1。增加整数归约和 FP16 缩放流水。代码、重建与板测复现见 `compat/head2017/dual_clock/`。
+- 本轮 XSim 检查 4102 个输入 beat、38 行混合协议、TLAST 与反压，缩放另用 512 行、2281 块的整数参考对拍。125/200 MHz 的新版计算域 WNS -4.661 ns，142.857 和 111.111 MHz 也未收敛。125/100 MHz 用原布线重新约束并配套低频 HWH 后通过 WNS +0.256 ns、WHS +0.025 ns。
+- 板上 125/100 MHz 读回通过，8 个真实 Gate/Up 加 100 次零输入和 3 个 Head 用例通过。固定前缀的 24 步全词表 logits 位级一致，同轮两对短提示合并解码 1.144→1.179 tok/s，Head 1.837→2.067 GB/s。125/83.33 MHz 也通过同样功能测试。原 Resident overlay 已恢复，DMA 锁可获取。
+- 实测记录见分支 `compat/head2017/dual_clock/RESULT.md`。本地独立工作树的 `build/dual-board/` 和 `build/head2017/dual-clock-*/` 保留详细日志。200 MHz 的优化仍受包头乘法、Head 选数至 DSP、SiLU 乘法器舍入限制，多列与长提示性能待验。
