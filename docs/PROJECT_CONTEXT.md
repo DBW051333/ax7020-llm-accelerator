@@ -146,6 +146,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 | 任务 ID | 负责人 | 状态 | 修改范围 | 独占资源/实际锁 | 最近更新 | 下一步/交接 |
 | --- | --- | --- | --- | --- | --- | --- |
+| single-chat-a9-release | Codex | 已完成发布准备 | README、A9 NEON 和 125/100 MHz 双时钟 Resident | 无设备占用 | 2026-11-27 | 通过 GitHub PR 进入 main；沿用 1024 配置、46 步配对测速和 24 步 logits 记录 |
 | resident-1202-release | Codex | 已完成 | compat/head2017/、README.md、共享交接 | 无设备占用 | 2026-11-20 | 1.202 tok/s 原分块常驻版，`codex/axi-resident-1202` |
 | context-init | 本轮 Codex | 已完成 | R/AGENTS.md、R/docs/PROJECT_CONTEXT.md、R/README.md | 无 | 2026-10-28 | 已建立共享入口；实现任务待用户指定 |
 | readiness-audit | 本轮 Codex | 已完成 | R/docs/PROJECT_CONTEXT.md；只读检查 D:/shuji | 无 | 2026-10-28 | 见第 9 节；板端系统状态仍待用户确认 |
@@ -390,3 +391,8 @@ vivado -mode batch -source bd_dma_quad.tcl
 - 独立分支 `codex/single-chat-neon`，实现 ARMv7 Q4_K/Q6_K/Q5_0 点积并保留原浮点累加顺序；使用板端既有工具链重新链接，现有 GGUF、RTL 和原 Resident 二进制不变。真实形状合成矩阵的结果逐位一致，三格式分别节省约 14%、15% 和 28% 的计算时间。
 - 同板同条件 ABBA，各侧合计 46 个解码步。原 overlay、上下文 256 为 1.158→1.263 tok/s（+9.1%）；双时钟 125/100 MHz、上下文 1024 为 1.169→1.296 tok/s（+10.8%，每 token 少 83.3 ms）。两组都对拍固定前缀 24 步、全 151936 logits 逐位一致。通过的运行全部 Gate/Up 常驻、Head 全 PL。初次原 overlay 1024 有 5 层回退，作为未通过的尝试保留，不计入 A/B。
 - 新独立入口 `~/ax7020-a9-decode/run_a9.sh` 默认 1024 和双时钟；已验证启动链路，随后恢复原 overlay。详细结果与复现见 `compat/head2017/a9_decode/README.md`，本机证据为该工作树的 `build/dual-board/a9-*`。本轮没有变更硬件实现或原启动入口，分支留在本地。
+
+
+### 2026-11-27 A9 NEON 双时钟版发布交接
+
+- 发布包含 A9 NEON 运行时、双时钟 overlay 源码、构建脚本及板测记录。README 链接到复现与部署文档。发布核查使用已有板测，本轮不占用板卡。
