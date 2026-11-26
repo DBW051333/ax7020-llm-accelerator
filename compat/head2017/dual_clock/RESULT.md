@@ -15,6 +15,10 @@ The original reference uses one 83.33 MHz clock for DMA and compute.
 | 125 / 83.33 | Routed dot-only build requalified at reduced FCLK1 | +0.709 / +0.023 | Board passed |
 | 125 / 100 | Routed dot-and-scaler build requalified at reduced FCLK1 | +0.256 / +0.025 | Board passed |
 
+A separate from-source 125/83.33 MHz build also passed timing with
+WNS +0.219 ns and WHS +0.018 ns. The board measurements use the
+requalified 125/83.33 MHz bitstream from the table.
+
 At 125/100, compute setup slack is +0.339 ns. The overall WNS is in the
 125 MHz domain. The build uses 43,040 LUTs (80.90%), 30,299 registers,
 84 BRAM36 and 40 DSP48E1. Setup, hold, pulse-width and the 16 FIFO
