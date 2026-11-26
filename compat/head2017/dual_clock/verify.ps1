@@ -26,6 +26,14 @@ $crossing = @"
     reg core_clk=0;
     always #$corePeriod core_clk=!core_clk;
     wire [63:0] core_input, core_output;
+    integer core_sent=0;
+    always @(posedge core_clk) if (rst_n && ci_valid && ci_ready) begin
+        if (core_sent >= INPUT_WORDS)
+            `$fatal(1,"Unexpected FIFO beat %0d",core_sent);
+        if ({ci_last,core_input} !== {(core_sent%233==0),input_words[core_sent]})
+            `$fatal(1,"FIFO input payload or TLAST changed at beat %0d",core_sent);
+        core_sent <= core_sent+1;
+    end
     wire ci_valid, ci_ready, ci_last, co_valid, co_ready, co_last;
     head_quad_ingress0_0 ingress(
         .s_axis_aclk(clk), .m_axis_aclk(core_clk),
@@ -41,6 +49,7 @@ $crossing = @"
         .m_axis_tdata(result), .m_axis_tvalid(out_valid), .m_axis_tready(out_ready), .m_axis_tlast(out_last));
 "@
 $text = $text.Replace($original, $crossing)
+$text = $text.Replace('if(sent!=INPUT_WORDS)', 'if(sent!=INPUT_WORDS || core_sent!=INPUT_WORDS)')
 [IO.File]::WriteAllText($testbench, $text, [Text.UTF8Encoding]::new($false))
 $shared = Join-Path $bd 'ipshared'
 function Get-UniqueSource($filter) {
@@ -67,9 +76,18 @@ try {
     if ($LASTEXITCODE) { throw 'xelab failed' }
     & (Join-Path $VivadoBin 'xsim.bat') cdc_sim -runall 2>&1 | Tee-Object simulation.txt
     if ($LASTEXITCODE -or !(Select-String -Quiet 'HEAD-SIM-PASS' simulation.txt)) { throw 'CDC simulation failed' }
+    if ($ScalePipeline) {
+        python (Join-Path $PSScriptRoot 'scale_vectors.py') $sim
+        if ($LASTEXITCODE) { throw 'Scale vectors failed' }
+        & (Join-Path $VivadoBin 'xvlog.bat') -sv tb_range.sv
+        if ($LASTEXITCODE) { throw 'Scale oracle compilation failed' }
+        & (Join-Path $VivadoBin 'xelab.bat') tb_range -s scale_range_sim -debug off -timescale 1ns/1ps
+        if ($LASTEXITCODE) { throw 'Scale oracle elaboration failed' }
+        & (Join-Path $VivadoBin 'xsim.bat') scale_range_sim -runall 2>&1 | Tee-Object scale-range.txt
+        if ($LASTEXITCODE -or !(Select-String -Quiet 'SCALE-RANGE-PASS' scale-range.txt)) {
+            throw 'Scale oracle simulation failed'
+        }
+    }
 } finally {
     Pop-Location
 }
-
-
-

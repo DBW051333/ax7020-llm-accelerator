@@ -31,6 +31,10 @@ bench() {
     local name=$1
     BLITE_HEAD=0 timeout 75 "$resident/test_gateup_resident" "$v5/vectors/real-gate-up.bin" 2>&1 | tee "$out/$name-dma.log"
     grep -q 'REAL-GATEUP-PASS' "$out/$name-dma.log"
+    local head=$home/ax7020-head2017
+    HEAD_TRY_FULL_RESIDENT=1 timeout 120 "$head/head_bench" "$model" 5952032 "$head/fixture" 15 | tee "$out/$name-head.log"
+    grep -q '^HEAD-PASS$' "$out/$name-head.log"
+    grep -q 'pl_rows=151936 cpu_rows=0' "$out/$name-head.log"
     run "$name-a"
     run "$name-b"
     cmp "$out/$name-a.stdout" "$out/$name-b.stdout"

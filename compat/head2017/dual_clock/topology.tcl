@@ -68,4 +68,3 @@ proc check_dual_clocks {axi compute} {
         }
     }
 }
-
