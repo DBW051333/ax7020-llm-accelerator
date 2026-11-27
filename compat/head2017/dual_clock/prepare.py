@@ -13,9 +13,9 @@ def replace_once(text, old, new):
         raise ValueError(f"Unexpected baseline source around {old!r}")
     return text.replace(old, new)
 
-def prepare(axi, compute, scale_pipeline):
+def prepare(axi, compute, scale_pipeline, output=None):
     suffix = "-pipe" if scale_pipeline else ""
-    out = repo / f"build/head2017/dual-clock-{axi}-{compute}{suffix}"
+    out = output or repo / f"build/head2017/dual-clock-{axi}-{compute}{suffix}"
     subprocess.run([sys.executable, str(here.parent / "prepare_decode.py"), "--output", str(out)], check=True)
     path = out / "build_quad.tcl"
     tcl = path.read_text()
@@ -48,5 +48,6 @@ if __name__ == "__main__":
     parser.add_argument("--axi", type=int, default=125)
     parser.add_argument("--compute", type=int, default=200)
     parser.add_argument("--scale-pipeline", action="store_true")
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    prepare(args.axi, args.compute, args.scale_pipeline)
+    prepare(args.axi, args.compute, args.scale_pipeline, args.output)
