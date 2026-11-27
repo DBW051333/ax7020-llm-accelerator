@@ -2,12 +2,14 @@ param(
     [int]$Axi = 125,
     [int]$Compute = 200,
     [switch]$ScalePipeline,
+    [string]$BuildOutput,
     [string]$VivadoBin = 'D:/Xilinx/Vivado/2017.4/bin'
 )
 $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 $suffix = if ($ScalePipeline) { '-pipe' } else { '' }
 $out = Join-Path $repo "build/head2017/dual-clock-$Axi-$Compute$suffix"
+if ($BuildOutput) { $out = (Resolve-Path $BuildOutput).Path }
 $bd = Join-Path $out 'quad/project/head_quad_2017.srcs/sources_1/bd/head_quad'
 if (!(Test-Path $bd)) { throw 'Generate the block design with the bd stage first' }
 $sim = Join-Path $out 'sim-cdc'
