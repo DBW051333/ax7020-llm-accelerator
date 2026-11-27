@@ -43,3 +43,31 @@ For one draft token and greedy verification, one round emits one token
 plus a second token when the draft agrees. A measured round time including
 draft and rejected-state handling must be below the single-column
 per-token time multiplied by the average emitted tokens per round.
+
+## AX7020 results on 2026-11-28
+
+Both modes passed Vivado 2017.4 XSim on real GGUF weights with random
+input gaps, output backpressure and two consecutive packets. Both routed
+at 125/100 MHz and read back those clocks on the board. The board test
+checked all 17,024 superblocks in each active column for each of 21 runs.
+All values matched the integer reference exactly.
+
+| Configuration | WNS / WHS (ns) | LUT / BRAM36 / DSP | First run (ms) | Median of 20 warm runs (ms) |
+| --- | --- | --- | ---: | ---: |
+| 64 MAC, one column | +0.823 / +0.036 | 16,847 / 12 / 4 | 3.859 | 3.593 |
+| 128 MAC, two columns | +1.318 / +0.033 | 19,407 / 20 / 8 | 3.722 | 3.399 |
+
+The input was 2,334,720 and 2,354,176 bytes respectively. Both returned
+136,192 bytes because the one-column packet uses the same output slot
+size. Two columns in 3.399 ms are equivalent to 1.700 ms per column
+for this benchmark. The approximately 2.11x matrix-column rate includes
+a 0.194 ms difference in wall time between two separate bitstreams.
+There was one session per configuration, so the small difference in
+absolute run times is not a repeatable latency claim. These resource
+totals belong to the laboratory overlay. A combined design with
+Resident Gate/Up and Head requires its own implementation report.
+
+Local evidence is under the worktree's build directory in
+q4-mac-board-1.log, q4-mac-board-2.log and q4-mac-restored.log.
+The original 83.33 MHz Resident overlay was restored after each test.
+The final check found FPGA operating, CMA 384 MiB and the DMA lock free.
