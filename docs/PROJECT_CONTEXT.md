@@ -146,6 +146,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 | 任务 ID | 负责人 | 状态 | 修改范围 | 独占资源/实际锁 | 最近更新 | 下一步/交接 |
 | --- | --- | --- | --- | --- | --- | --- |
+| para-mac-integration | Codex | 整模板测完成 | codex/para-mac，64 MAC Q4_K Down 接入 A9 NEON Resident | 已恢复原 Resident 83.33 MHz，384 MiB CMA，DMA 锁空闲 | 2026-11-28 | ABBA 1.388→1.458 tok/s，热态 1.470→1.564 tok/s，固定历史逐位一致 |
 | single-chat-a9-release | Codex | 已完成发布准备 | README、A9 NEON 和 125/100 MHz 双时钟 Resident | 无设备占用 | 2026-11-27 | 通过 GitHub PR 进入 main；沿用 1024 配置、46 步配对测速和 24 步 logits 记录 |
 | resident-1202-release | Codex | 已完成 | compat/head2017/、README.md、共享交接 | 无设备占用 | 2026-11-20 | 1.202 tok/s 原分块常驻版，`codex/axi-resident-1202` |
 | context-init | 本轮 Codex | 已完成 | R/AGENTS.md、R/docs/PROJECT_CONTEXT.md、R/README.md | 无 | 2026-10-28 | 已建立共享入口；实现任务待用户指定 |
@@ -396,3 +397,8 @@ vivado -mode batch -source bd_dma_quad.tcl
 ### 2026-11-27 A9 NEON 双时钟版发布交接
 
 - 发布包含 A9 NEON 运行时、双时钟 overlay 源码、构建脚本及板测记录。README 链接到复现与部署文档。发布核查使用已有板测，本轮不占用板卡。
+
+### 2026-11-28 Para-MAC 单人聊天板测
+
+- 64 MAC 单列接入 A9 NEON 双时钟 Resident。PL 处理 12 个 Q4_K Down，ARM 恢复最小值校正并按原序 FP32 累加，原 Gate/Up 和 Head 保持完整常驻。Vivado 2017.4 最终 125/100 MHz WNS +0.007 ns、WHS +0.034 ns，16 项 FIFO bus-skew 通过，49930 LUT。整模诊断 276 次派发、247296 个投影值和固定历史 24 步全 logits 逐位一致。
+- 同 overlay、同可执行文件、上下文 1024、双线程，ABBA 每侧 126 步 1.388→1.458 tok/s（+5.07%），去每轮前四步后 1.470→1.564 tok/s（+6.45%）。计时运行均无回退。两份冲突的预启动输出已弃用，有效日志为当前实验工作树 build/para-final-board.log，板端 results.para.WwDgiX。已恢复原 Resident 和 DMA 空闲。128 MAC 双列候选验证尚未接入。

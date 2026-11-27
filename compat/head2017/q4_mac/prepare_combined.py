@@ -1,14 +1,19 @@
 """Generate the combined Para-MAC and Resident overlay in an isolated build."""
+import argparse
 from pathlib import Path
 import subprocess
 import sys
 
 here = Path(__file__).resolve().parent
-out = here.parents[2] / 'build/head2017/para-mac'
+parser = argparse.ArgumentParser()
+parser.add_argument('--compute', type=int, choices=(83, 100), default=100)
+args = parser.parse_args()
+tag = 'para-mac' if args.compute == 100 else 'para-mac-83'
+out = here.parents[2] / 'build/head2017' / tag
 if out.exists():
     raise SystemExit(f'Use a fresh build directory: {out}')
 subprocess.run([sys.executable, str(here.parent / 'dual_clock/prepare.py'),
-                '--axi', '125', '--compute', '100', '--scale-pipeline',
+                '--axi', '125', '--compute', str(args.compute), '--scale-pipeline',
                 '--output', str(out)], check=True)
 rtl = out / 'rtl'
 (rtl / 'para_mac_lane.sv').write_text((here / 'decode_lane.sv').read_text().replace(

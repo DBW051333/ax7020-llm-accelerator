@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
+exec 8> .para-bench.lock
+flock -n 8
 pynq=/usr/local/share/pynq-venv/bin/python3
 model=/home/xilinx/ax7020-gateup2017/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
 if pgrep -x llama-cli-a9 || pgrep -x llama-cli-resid || pgrep -x llama-cli-para || pgrep -x llama-cli-proje; then exit 1; fi
@@ -28,7 +30,7 @@ run() {
     env BLITE_PARA_MAC="$mac" "$@" timeout 240 ./llama-cli-para "${common[@]}" -n "$tokens" >"$out/$tag.out" 2>"$out/$tag.log" || {
         tail -45 "$out/$tag.log"; return 1
     }
-    grep -E 'PARA-|HEAD-STATS|RESIDENT-GATEUP|^[^:]+: +eval time' "$out/$tag.log"
+    grep -E 'PARA-(MAC|FIRST)|HEAD-STATS|RESIDENT-GATEUP|^[^:]+: +eval time' "$out/$tag.log"
     grep -Eq 'HEAD-STATS .* pl_rows=151936 cpu_rows=0 ' "$out/$tag.log"
     grep -Eq 'RESIDENT-GATEUP .* fallback=0 layers=24 ' "$out/$tag.log"
     if (( mac )); then grep -Eq 'PARA-MAC calls=[1-9][0-9]* fallback=0 groups=12 ' "$out/$tag.log"; fi
