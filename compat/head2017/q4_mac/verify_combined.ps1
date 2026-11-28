@@ -1,7 +1,8 @@
-param([string]$Model,[string]$VivadoBin='D:/Xilinx/Vivado/2017.4/bin')
+param([string]$Model,[string]$BuildOutput,[string]$VivadoBin='D:/Xilinx/Vivado/2017.4/bin')
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 $build=Join-Path $root 'build/head2017/para-mac'
+if ($BuildOutput) { $build=(Resolve-Path $BuildOutput).Path }
 $sim=Join-Path $build 'sim-para'
 New-Item -ItemType Directory -Force $sim | Out-Null
 Push-Location $sim

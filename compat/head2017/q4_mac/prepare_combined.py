@@ -7,8 +7,11 @@ import sys
 here = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--compute', type=int, choices=(83, 100), default=100)
+parser.add_argument('--dsp-width', type=int, choices=(64, 128))
 args = parser.parse_args()
 tag = 'para-mac' if args.compute == 100 else 'para-mac-83'
+if args.dsp_width:
+    tag += f'-dsp{args.dsp_width}'
 out = here.parents[2] / 'build/head2017' / tag
 if out.exists():
     raise SystemExit(f'Use a fresh build directory: {out}')
@@ -16,8 +19,13 @@ subprocess.run([sys.executable, str(here.parent / 'dual_clock/prepare.py'),
                 '--axi', '125', '--compute', str(args.compute), '--scale-pipeline',
                 '--output', str(out)], check=True)
 rtl = out / 'rtl'
-(rtl / 'para_mac_lane.sv').write_text((here / 'decode_lane.sv').read_text().replace(
-    'module decode_lane', 'module para_mac_lane').replace('parameter COLUMNS = 2', 'parameter COLUMNS = 1'))
+if args.dsp_width:
+    lane = (here / 'dsp_lane.sv').read_text()
+    beats = args.dsp_width // 64
+    (rtl / 'para_mac_lane.sv').write_text(lane.replace('parameter BEATS=2', f'parameter BEATS={beats}'))
+else:
+    (rtl / 'para_mac_lane.sv').write_text((here / 'decode_lane.sv').read_text().replace(
+        'module decode_lane', 'module para_mac_lane').replace('parameter COLUMNS = 2', 'parameter COLUMNS = 1'))
 path = rtl / 'decode_lane.v'
 source = path.read_text()
 changes = {
