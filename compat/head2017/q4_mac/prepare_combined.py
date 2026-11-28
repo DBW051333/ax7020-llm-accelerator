@@ -8,10 +8,15 @@ here = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--compute', type=int, choices=(83, 100), default=100)
 parser.add_argument('--dsp-width', type=int, choices=(64, 128))
+parser.add_argument('--block-activations', action='store_true')
 args = parser.parse_args()
+if args.block_activations and not args.dsp_width:
+    parser.error('--block-activations requires --dsp-width')
 tag = 'para-mac' if args.compute == 100 else 'para-mac-83'
 if args.dsp_width:
     tag += f'-dsp{args.dsp_width}'
+if args.block_activations:
+    tag += '-xpm'
 out = here.parents[2] / 'build/head2017' / tag
 if out.exists():
     raise SystemExit(f'Use a fresh build directory: {out}')
@@ -20,7 +25,16 @@ subprocess.run([sys.executable, str(here.parent / 'dual_clock/prepare.py'),
                 '--output', str(out)], check=True)
 rtl = out / 'rtl'
 if args.dsp_width:
-    lane = (here / 'dsp_lane.sv').read_text()
+    name = 'dsp_lane_bram.sv' if args.block_activations else 'dsp_lane.sv'
+    lane = (here / name).read_text()
+    if args.block_activations:
+        lane = lane.replace('parameter BLOCK_RAM=0', 'parameter BLOCK_RAM=1')
+        build = out / 'build_quad.tcl'
+        tcl = build.read_text()
+        anchor = '    add_files [glob'
+        assert tcl.count(anchor) == 1
+        tcl = tcl.replace(anchor, '    set_property XPM_LIBRARIES {XPM_CDC XPM_MEMORY} [current_project]\n' + anchor)
+        build.write_text(tcl)
     beats = args.dsp_width // 64
     (rtl / 'para_mac_lane.sv').write_text(lane.replace('parameter BEATS=2', f'parameter BEATS={beats}'))
 else:

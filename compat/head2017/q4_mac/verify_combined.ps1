@@ -20,7 +20,11 @@ try {
     $text=$text.Replace('sent==INPUTS-1, input_ready','(sent==INPUTS-1 || sent==19*32), input_ready')
     Set-Content -Encoding ascii tb.sv $text
     $rtl=Get-ChildItem (Join-Path $build 'rtl') -File | Where-Object Extension -in '.v','.sv'
-    & "$VivadoBin/xvlog.bat" -sv @($rtl.FullName) tb.sv
+    $xpm=@()
+    if (Select-String -Quiet -Path (Join-Path $build 'rtl/para_mac_lane.sv') -Pattern 'parameter BLOCK_RAM=1') {
+        $xpm=@((Join-Path $VivadoBin '../data/ip/xpm/xpm_memory/hdl/xpm_memory.sv'))
+    }
+    & "$VivadoBin/xvlog.bat" -sv @xpm @($rtl.FullName) tb.sv
     if($LASTEXITCODE) {throw 'Combined xvlog failed'}
     & "$VivadoBin/xelab.bat" work.tb_one -s para_mux
     if($LASTEXITCODE) {throw 'Combined xelab failed'}

@@ -72,7 +72,12 @@ $wrapper = @('ingress','egress') | ForEach-Object { Join-Path $bd "ip/head_quad_
 $rtl = Get-ChildItem (Join-Path $out 'rtl') -File | Where-Object Extension -in '.v','.sv'
 Push-Location $sim
 try {
-    & (Join-Path $VivadoBin 'xvlog.bat') -sv -i $include @($source.FullName) @($rtl.FullName) @wrapper $testbench
+    $xpm=@()
+    $para = Join-Path $out 'rtl/para_mac_lane.sv'
+    if ((Test-Path $para) -and (Select-String -Quiet -Path $para -Pattern 'parameter BLOCK_RAM=1')) {
+        $xpm=@((Join-Path $VivadoBin '../data/ip/xpm/xpm_memory/hdl/xpm_memory.sv'))
+    }
+    & (Join-Path $VivadoBin 'xvlog.bat') -sv -i $include @($source.FullName) @xpm @($rtl.FullName) @wrapper $testbench
     if ($LASTEXITCODE) { throw 'xvlog failed' }
     & (Join-Path $VivadoBin 'xelab.bat') tb_head glbl -s cdc_sim -debug off -timescale 1ns/1ps
     if ($LASTEXITCODE) { throw 'xelab failed' }
