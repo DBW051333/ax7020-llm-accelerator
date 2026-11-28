@@ -424,3 +424,7 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 - codex/para-mac-dsp 将 64 个 Q4_K 窄乘法映射到 DSP，然后扩至单列 128 个。128 版 LUTRAM 默认及 Explore 布局均因 Slice 打包失败，改用显式 BRAM 激活 bank 后通过。两版通过 Q4_K 真权重、Gate/Up、Head 和缩放器仿真，125/100 MHz 时序通过。布线网表为全版 108/176 DSP，其中 Q4_K 乘法各 64/128；LUT 48191/45515，BRAM36 84/100，WNS +0.027/+0.131 ns。
 - 同频 ABBA 每侧 94 步。原 LUT64 对比 DSP64，完整 TPS 1.4760→1.4590，热态 1.5900→1.5970。第二轮 DSP64 对比 DSP128，完整 1.4604→1.4549，热态 1.5977→1.6033，Down DMA 14.03→14.12 ms/token。两版固定历史 24 步全词表 logits 和 247296 个 Down 值逐位一致，12 个矩阵无回退。128 版仍从 64-bit 链路收两拍再做一次 32 项乘法，单聊速度差小。已恢复原 Resident 和 384 MiB CMA，DMA 锁空闲。日志 build/para-dsp-board.log、build/para-dsp128-xpm-board.log。
+
+### 2026-11-28 Para-MAC DSP 实验分支发布交接
+
+- GitHub 发布分支为 codex/para-mac-dsp，板测记录提交 c945d0b。发布内容包括 64/128 DSP Para-MAC 源码、构建与验证脚本和板测报告。继续实验时使用独立分支，并沿用同频 ABBA 对照。
