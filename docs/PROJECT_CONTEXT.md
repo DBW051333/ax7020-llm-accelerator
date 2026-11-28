@@ -146,6 +146,8 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 | 任务 ID | 负责人 | 状态 | 修改范围 | 独占资源/实际锁 | 最近更新 | 下一步/交接 |
 | --- | --- | --- | --- | --- | --- | --- |
+| para-mac-wait-audit | Codex | 板测排查完成 | 独立 ARM 运行时、沿用 Para-MAC bitstream | 已恢复原 Resident | 2026-11-28 | 分段日志区分结果回收、前缀及权重流窗口 |
+| para-mac-dsp-width | Codex | 板测完成 | codex/para-mac-dsp，Q4_K 64/128 DSP 乘法与 BRAM | 原 Resident 已恢复，DMA 锁空闲 | 2026-11-28 | 128 DSP 产品阵列，热态 1.6033 tok/s，同轮 64 DSP 为 1.5977 |
 | para-mac-integration | Codex | 整模板测完成 | codex/para-mac，64 MAC Q4_K Down 接入 A9 NEON Resident | 已恢复原 Resident 83.33 MHz，384 MiB CMA，DMA 锁空闲 | 2026-11-28 | ABBA 1.388→1.458 tok/s，热态 1.470→1.564 tok/s，固定历史逐位一致 |
 | single-chat-a9-release | Codex | 已完成发布准备 | README、A9 NEON 和 125/100 MHz 双时钟 Resident | 无设备占用 | 2026-11-27 | 通过 GitHub PR 进入 main；沿用 1024 配置、46 步配对测速和 24 步 logits 记录 |
 | resident-1202-release | Codex | 已完成 | compat/head2017/、README.md、共享交接 | 无设备占用 | 2026-11-20 | 1.202 tok/s 原分块常驻版，`codex/axi-resident-1202` |
@@ -402,3 +404,23 @@ vivado -mode batch -source bd_dma_quad.tcl
 
 - 64 MAC 单列接入 A9 NEON 双时钟 Resident。PL 处理 12 个 Q4_K Down，ARM 恢复最小值校正并按原序 FP32 累加，原 Gate/Up 和 Head 保持完整常驻。Vivado 2017.4 最终 125/100 MHz WNS +0.007 ns、WHS +0.034 ns，16 项 FIFO bus-skew 通过，49930 LUT。整模诊断 276 次派发、247296 个投影值和固定历史 24 步全 logits 逐位一致。
 - 同 overlay、同可执行文件、上下文 1024、双线程，ABBA 每侧 126 步 1.388→1.458 tok/s（+5.07%），去每轮前四步后 1.470→1.564 tok/s（+6.45%）。计时运行均无回退。两份冲突的预启动输出已弃用，有效日志为当前实验工作树 build/para-final-board.log，板端 results.para.WwDgiX。已恢复原 Resident 和 DMA 空闲。128 MAC 双列候选验证尚未接入。
+- DSP48E1 布线网表逐项核查，共 44/220。Gate/Up 32（缩放 8、SiLU 与逐元素乘 16、包长度计算 8），Head 缩放 8，Para-MAC 整数缩放和累加 4。三路点积的窄乘法映射到 LUT。证据为 build/dsp-audit/dsp-map.log。
+
+### 2026-11-28 DSP 并行度与单聊 TPS 预算
+
+- 源码检查显示 Head 缩放流水无反压时每拍可接收一个点积块，前级每四拍给一块。Gate/Up 每路每对 896 维点积至少 224 个乘积拍，SiLU 状态机每行约 20 拍。优先考虑 Para-MAC 用 DSP 计算 Q4_K 最小值修正，在现有每块 64-bit 结果的空闲高 32 位回传整数修正和，ARM 保留 FP32 次序。热态 1.564 tok/s 对应约 639 ms/token，当前 Down ARM 归约约 33.36 ms/token；若全省且新增开销为零，上限约 1.65 tok/s。源码分析和预算，未修改 RTL 或上板。
+
+### 2026-11-28 Para-MAC DMA 等待排查
+
+- 同一已验收 125/100 MHz bitstream 与 384 MiB CMA，在独立运行时用 ARM 时间戳拆分 DMA，生成 32 token，去前四个 decode 步后各轮统计 27 步。第二轮权重流窗口 Gate/Up 100.060、Head 69.564、Down 10.207 ms/token。三条路径前缀 0.310、DMA 尾部 0.198 ms/token。窗口包含 DDR 供数与 PL 处理/反压，无法据此确定硬件空拍比例。
+- Gate/Up 和 Head 用于 S2MM 结果同步及读取的时间为 19.418 和 22.504 ms/token。单独的 XRT 同步只占 0.700 和 0.206，余下约 41.0 ms/token 主要在 ARM 逐行读取、检查和复制。Down 的 XRT 同步 3.212 ms/token，后续 ARM 归约约 32.8 ms/token（31 步均值）。
+- 两轮各 372 次 Down 派发无回退。原 Resident 已恢复。工作树证据为 build/para-wait-audit/{summary,split-summary}.txt 和原始日志。可先试 Gate/Up 与 Head 的可缓存 RX，核对读取时间和数值，再在硬件计数中拆分输入断流与内核反压。
+
+### 2026-11-28 四倍并行资源与供数预算
+
+- 只复制 DSP 数据通路而共享 8 个 Gate/Up 包长计算 DSP，理论数量为 (44-8)×4+8=152/220。按当前数据包与 100 MHz，点积并行度乘四时 Gate/Up、Head、Q4_K Down 的单列权重满载带宽分别约 9.6、13.6、13.6 GB/s，超过四路 64-bit HP 在 125 MHz 的 4.0 GB/s 理论上限。复制点积、复制缩放与可达到的整模 TPS 分别验收。未修改 RTL 或上板。
+
+### 2026-11-28 Para-MAC DSP 迁移与加宽板测
+
+- codex/para-mac-dsp 将 64 个 Q4_K 窄乘法映射到 DSP，然后扩至单列 128 个。128 版 LUTRAM 默认及 Explore 布局均因 Slice 打包失败，改用显式 BRAM 激活 bank 后通过。两版通过 Q4_K 真权重、Gate/Up、Head 和缩放器仿真，125/100 MHz 时序通过。布线网表为全版 108/176 DSP，其中 Q4_K 乘法各 64/128；LUT 48191/45515，BRAM36 84/100，WNS +0.027/+0.131 ns。
+- 同频 ABBA 每侧 94 步。原 LUT64 对比 DSP64，完整 TPS 1.4760→1.4590，热态 1.5900→1.5970。第二轮 DSP64 对比 DSP128，完整 1.4604→1.4549，热态 1.5977→1.6033，Down DMA 14.03→14.12 ms/token。两版固定历史 24 步全词表 logits 和 247296 个 Down 值逐位一致，12 个矩阵无回退。128 版仍从 64-bit 链路收两拍再做一次 32 项乘法，单聊速度差小。已恢复原 Resident 和 384 MiB CMA，DMA 锁空闲。日志 build/para-dsp-board.log、build/para-dsp128-xpm-board.log。

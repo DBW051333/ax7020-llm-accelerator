@@ -68,3 +68,35 @@ the same one-cycle read latency and the same packet format. To build
 it, pass `--dsp-width 128 --block-activations` and use the resulting
 `build/head2017/para-mac-dsp128-xpm` directory. The XPM variant passed
 the same Q4_K, Gate/Up, Head and scaler simulation suites.
+
+The explicit block RAM implementation passed at 125/100 MHz with
++0.131 ns WNS and +0.036 ns WHS. The routed netlist uses 45,515 LUT,
+100 BRAM36 tiles and 176 DSP48E1 blocks. The Q4_K product array uses
+128 DSP blocks, and the remaining DSPs handle scaling and the
+original Resident arithmetic. The physical product-cell listing is
+`build/head2017/para-mac-dsp128-xpm/dsp-map.log`.
+
+### 128 DSP against 64 DSP on the board
+
+Both variants ran the same executable at 125/100 MHz, with 384 MiB
+CMA, context 1024 and two threads. The 128-wide output matched all
+247,296 Down values and the full logits of all 24 fixed-history
+steps exactly. The four ABBA runs had identical free output and
+zero fallback, with 47 timed decode steps per run.
+
+| Build | Pooled TPS | Warm TPS | Down DMA (ms/token) |
+| --- | ---: | ---: | ---: |
+| 64 DSP Q4 products | 1.4604 | 1.5977 | 14.03 |
+| 128 DSP Q4 products, banked BRAM | 1.4549 | 1.6033 | 14.12 |
+
+Warm throughput differed by +0.35%, while full-run throughput differed
+by -0.38%. Median warm step times ranged from 632.40 to 633.02 ms.
+The 64-bit DMA interface still supplies one weight word at a time.
+The 128-wide kernel forms a pair of words before issuing its wide
+multiply. These measurements show comparable short-prompt generation
+rates and do not establish a throughput gain from the extra multipliers.
+
+The board result directory is results.G3iFXY in ax7020-para-dsp. Host
+evidence is `build/para-dsp128-xpm-board.log`. The benchmark restored
+the original Resident overlay and confirmed 384 MiB CMA, FPGA
+operating state and an available DMA lock.
